@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.thlam05.chatapp.dto.response.LoginResponse;
+import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
 import com.thlam05.chatapp.models.User;
@@ -32,5 +33,25 @@ public class AuthService {
                 .authenticated(authenticated)
                 .token(token)
                 .build();
+    }
+
+    public UserResponse handleRegister(String username, String password) {
+        String passwordEncoded = passwordEncoder.encode(password);
+
+        User user = User.builder()
+                .username(username)
+                .password(passwordEncoded)
+                .build();
+
+        user = userRepository.save(user);
+
+        UserResponse userResponse = UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+
+        return userResponse;
     }
 }

@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thlam05.chatapp.dto.request.LoginRequest;
+import com.thlam05.chatapp.dto.request.RegisterRequest;
 import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.LoginResponse;
+import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.services.AuthService;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +27,14 @@ public class AuthController {
 
         ApiResponse<LoginResponse> apiResponse = new ApiResponse<>(loginResponse);
 
+        return apiResponse;
+    }
+
+    @PostMapping("/register")
+    public ApiResponse<UserResponse> handleRegister(@RequestBody RegisterRequest registerRequest) {
+        UserResponse userResponse = authService.handleRegister(registerRequest.getUsername(),
+                registerRequest.getPassword());
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>(userResponse);
         return apiResponse;
     }
 
