@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  signerKey: ${SECRET_KEY}
+  valid-duration: 3600 # in seconds
+  refreshable-duration: 36000 # in seconds
