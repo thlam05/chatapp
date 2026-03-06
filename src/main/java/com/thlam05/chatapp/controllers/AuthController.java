@@ -10,10 +10,12 @@ import com.thlam05.chatapp.dto.response.LoginResponse;
 import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.services.AuthService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/auth")
@@ -22,7 +24,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/login")
-    public ApiResponse<LoginResponse> handleLogin(@RequestBody LoginRequest loginRequest) {
+    public ApiResponse<LoginResponse> handleLogin(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.handleLogin(loginRequest.getUsername(), loginRequest.getPassword());
 
         ApiResponse<LoginResponse> apiResponse = new ApiResponse<>(loginResponse);
@@ -36,6 +38,12 @@ public class AuthController {
                 registerRequest.getPassword());
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>(userResponse);
         return apiResponse;
+    }
+
+    @GetMapping("/user")
+    public String getAuthenticatedUser() {
+
+        return "";
     }
 
 }
