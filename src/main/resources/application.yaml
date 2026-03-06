@@ -13,6 +13,6 @@ spring:
     show-sql: true
 
 jwt:
-  signerKey: ${SECRET_KEY}
+  secret-key: ${SECRET_KEY}
   valid-duration: 3600 # in seconds
   refreshable-duration: 36000 # in seconds
