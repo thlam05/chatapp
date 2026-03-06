@@ -1,5 +1,6 @@
 package com.thlam05.chatapp.services;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,5 +54,19 @@ public class AuthService {
                 .build();
 
         return userResponse;
+    }
+
+    public UserResponse getAuthenticatedUser() {
+        var context = SecurityContextHolder.getContext();
+        String id = context.getAuthentication().getName();
+
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
     }
 }
