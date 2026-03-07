@@ -40,7 +40,7 @@ public class Message {
     @UpdateTimestamp
     LocalDateTime updatedAt;
 
-    @Column(name = "is_seen")
+    @Column(name = "is_seen", columnDefinition = "boolean default false")
     boolean isSeen;
 
     @JoinColumn(name = "conversation_id")
