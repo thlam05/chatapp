@@ -38,6 +38,14 @@ public class ConversationController {
         return apiResponse;
     }
 
+    @GetMapping("/{conversationId}/message")
+    public ApiResponse<List<MessageResponse>> getAllMessage(@PathVariable String conversationId) {
+        List<MessageResponse> listMessageResponses = messageService.getAllMessagesByConversation(conversationId);
+
+        ApiResponse<List<MessageResponse>> apiResponse = new ApiResponse<>(listMessageResponses);
+        return apiResponse;
+    }
+
     @PostMapping()
     public ApiResponse<ConversationResponse> createConversation(
             @RequestBody CreateConversationRequest createConversationRequest) {

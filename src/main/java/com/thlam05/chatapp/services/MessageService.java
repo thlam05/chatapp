@@ -1,5 +1,7 @@
 package com.thlam05.chatapp.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.thlam05.chatapp.dto.request.MessageRequest;
@@ -33,5 +35,22 @@ public class MessageService {
         message = messageRepository.save(message);
 
         return messageMapper.toMessageResponse(message);
+    }
+
+    public MessageResponse getMessageById(String messageId) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+
+        return messageMapper.toMessageResponse(message);
+    }
+
+    public List<MessageResponse> getAllMessages() {
+        List<Message> listMessages = messageRepository.findAll();
+        return messageMapper.toListMessageResponses(listMessages);
+    }
+
+    public List<MessageResponse> getAllMessagesByConversation(String conversationId) {
+        List<Message> listMessages = messageRepository.findByConversationId(conversationId);
+        return messageMapper.toListMessageResponses(listMessages);
     }
 }
