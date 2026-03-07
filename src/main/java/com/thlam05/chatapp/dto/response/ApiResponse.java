@@ -25,4 +25,14 @@ public class ApiResponse<T> {
         this.data = data;
         this.success = true;
     }
+
+    public ApiResponse(ResponseCode responseCode) {
+        this.code = responseCode.getCode();
+        this.message = responseCode.getMessage();
+        this.data = null;
+        success = false;
+        if (responseCode.getCode() == 0) {
+            success = true;
+        }
+    }
 }

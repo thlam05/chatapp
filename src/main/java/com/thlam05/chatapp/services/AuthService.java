@@ -1,5 +1,6 @@
 package com.thlam05.chatapp.services;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +8,7 @@ import com.thlam05.chatapp.dto.response.LoginResponse;
 import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
+import com.thlam05.chatapp.mappers.UserMapper;
 import com.thlam05.chatapp.models.User;
 import com.thlam05.chatapp.repositories.UserRepository;
 
@@ -18,6 +20,7 @@ public class AuthService {
     UserRepository userRepository;
     JwtService jwtService;
     PasswordEncoder passwordEncoder;
+    UserMapper userMapper;
 
     public LoginResponse handleLogin(String username, String password) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
@@ -45,13 +48,15 @@ public class AuthService {
 
         user = userRepository.save(user);
 
-        UserResponse userResponse = UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+        return userMapper.toUserResponse(user);
+    }
 
-        return userResponse;
+    public UserResponse getAuthenticatedUser() {
+        var context = SecurityContextHolder.getContext();
+        String id = context.getAuthentication().getName();
+
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+
+        return userMapper.toUserResponse(user);
     }
 }

@@ -41,9 +41,10 @@ public class AuthController {
     }
 
     @GetMapping("/user")
-    public String getAuthenticatedUser() {
-
-        return "";
+    public ApiResponse<UserResponse> getAuthenticatedUser() {
+        UserResponse userResponse = authService.getAuthenticatedUser();
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>(userResponse);
+        return apiResponse;
     }
 
 }

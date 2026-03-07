@@ -2,14 +2,29 @@ package com.thlam05.chatapp.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.thlam05.chatapp.dto.response.ApiResponse;
+import com.thlam05.chatapp.dto.response.UserResponse;
+import com.thlam05.chatapp.services.UserService;
+
+import lombok.AllArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
+    UserService userService;
+
     @GetMapping()
-    public String getAllUsers() {
-        return "test";
+    public ApiResponse<List<UserResponse>> getAllUsers() {
+        List<UserResponse> listUsers = userService.getAllUsers();
+
+        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>(listUsers);
+        return apiResponse;
     }
 
 }
