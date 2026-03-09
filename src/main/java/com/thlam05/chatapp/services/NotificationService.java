@@ -53,4 +53,8 @@ public class NotificationService {
 
         return notificationMapper.toNotificationResponse(notification);
     }
+
+    public void deleteNotification(String notificationId) {
+        notificationRepository.deleteById(notificationId);
+    }
 }

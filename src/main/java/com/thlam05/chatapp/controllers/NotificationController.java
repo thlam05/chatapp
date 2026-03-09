@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.thlam05.chatapp.dto.request.NotificationRequest;
 import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.NotificationResponse;
+import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.services.NotificationService;
 
 import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +41,13 @@ public class NotificationController {
 
         ApiResponse<NotificationResponse> apiResponse = new ApiResponse<>(notificationResponse);
         return apiResponse;
+    }
+
+    @DeleteMapping("/{notificationId}")
+    public ApiResponse<?> deleteNotification(@PathVariable String notificationId) {
+        notificationService.deleteNotification(notificationId);
+
+        return new ApiResponse<>(ResponseCode.SUCCESS);
     }
 
 }
