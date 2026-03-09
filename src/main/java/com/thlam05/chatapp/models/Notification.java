@@ -32,7 +32,7 @@ public class Notification {
     String title;
     String content;
     @Column(name = "is_read")
-    boolean isRead;
+    boolean read;
 
     @Column(name = "created_at")
     @CreationTimestamp
