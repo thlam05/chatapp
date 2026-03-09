@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.thlam05.chatapp.dto.request.MessageRequest;
 import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.MessageResponse;
+import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.services.MessageService;
 
 import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,6 +48,12 @@ public class MessageController {
 
         ApiResponse<MessageResponse> apiResponse = new ApiResponse<>(messageResponse);
         return apiResponse;
+    }
+
+    @DeleteMapping("/{messageId}")
+    public ApiResponse<?> deleteMessage(@PathVariable String messageId) {
+        messageService.deleteMessage(messageId);
+        return new ApiResponse<>(ResponseCode.SUCCESS);
     }
 
 }

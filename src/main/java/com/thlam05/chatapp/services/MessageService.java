@@ -64,4 +64,8 @@ public class MessageService {
 
         return messageMapper.toMessageResponse(message);
     }
+
+    public void deleteMessage(String messageId) {
+        messageRepository.deleteById(messageId);
+    }
 }
