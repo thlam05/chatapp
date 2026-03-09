@@ -53,4 +53,15 @@ public class MessageService {
         List<Message> listMessages = messageRepository.findByConversationId(conversationId);
         return messageMapper.toListMessageResponses(listMessages);
     }
+
+    public MessageResponse updateMessage(String messageId, MessageRequest messageRequest) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+
+        message.setContent(messageRequest.getContent());
+
+        messageRepository.save(message);
+
+        return messageMapper.toMessageResponse(message);
+    }
 }
