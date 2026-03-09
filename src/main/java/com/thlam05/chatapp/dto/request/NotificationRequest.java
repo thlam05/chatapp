@@ -15,4 +15,5 @@ import lombok.experimental.FieldDefaults;
 public class NotificationRequest {
     String title;
     String content;
+    boolean read;
 }

@@ -42,4 +42,15 @@ public class NotificationService {
 
         return notificationMapper.toNotificationResponse(notification);
     }
+
+    public NotificationResponse updateNotification(String notificationId, NotificationRequest notificationRequest) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+
+        notificationMapper.updateNotification(notificationRequest, notification);
+
+        notification = notificationRepository.save(notification);
+
+        return notificationMapper.toNotificationResponse(notification);
+    }
 }
