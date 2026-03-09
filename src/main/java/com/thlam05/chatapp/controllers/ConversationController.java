@@ -55,7 +55,7 @@ public class ConversationController {
         return apiResponse;
     }
 
-    @PostMapping("/{conversationId}/message")
+    @PostMapping("/{conversationId}/messages")
     public ApiResponse<MessageResponse> createMessage(@RequestBody MessageRequest messageRequest,
             @PathVariable String conversationId) {
         MessageResponse messageResponse = messageService.createMessage(messageRequest, conversationId);
