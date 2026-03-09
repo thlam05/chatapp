@@ -4,10 +4,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
+import com.thlam05.chatapp.dto.request.MessageRequest;
 import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.ConversationResponse;
+import com.thlam05.chatapp.dto.response.MessageResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.services.ConversationService;
+import com.thlam05.chatapp.services.MessageService;
 
 import lombok.AllArgsConstructor;
 
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ConversationController {
 
     ConversationService conversationService;
+    MessageService messageService;
 
     @GetMapping()
     public ApiResponse<List<ConversationResponse>> getAllConversations() {
@@ -34,12 +38,30 @@ public class ConversationController {
         return apiResponse;
     }
 
+    @GetMapping("/{conversationId}/message")
+    public ApiResponse<List<MessageResponse>> getAllMessage(@PathVariable String conversationId) {
+        List<MessageResponse> listMessageResponses = messageService.getAllMessagesByConversation(conversationId);
+
+        ApiResponse<List<MessageResponse>> apiResponse = new ApiResponse<>(listMessageResponses);
+        return apiResponse;
+    }
+
     @PostMapping()
     public ApiResponse<ConversationResponse> createConversation(
             @RequestBody CreateConversationRequest createConversationRequest) {
         ConversationResponse conversationResponse = conversationService.createConversation(createConversationRequest);
 
         ApiResponse<ConversationResponse> apiResponse = new ApiResponse<>(conversationResponse);
+        return apiResponse;
+    }
+
+    @PostMapping("/{conversationId}/message")
+    public ApiResponse<MessageResponse> createMessage(@RequestBody MessageRequest messageRequest,
+            @PathVariable String conversationId) {
+        MessageResponse messageResponse = messageService.createMessage(messageRequest, conversationId);
+
+        ApiResponse<MessageResponse> apiResponse = new ApiResponse<>(messageResponse);
+
         return apiResponse;
     }
 
