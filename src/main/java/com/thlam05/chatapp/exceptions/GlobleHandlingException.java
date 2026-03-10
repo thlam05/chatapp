@@ -28,6 +28,23 @@ public class GlobleHandlingException {
         return ResponseEntity.status(code.getStatus()).body(apiResponse);
     }
 
+    @ExceptionHandler(value = Exception.class)
+    ResponseEntity<ApiResponse<Void>> handlingAppException(Exception exception) {
+        ResponseCode code = ResponseCode.INTERNAL_SERVER_ERROR;
+        ApiResponse<Void> apiResponse = new ApiResponse<>(code);
+
+        apiResponse.setCode(code.getCode());
+        apiResponse.setMessage(exception.getMessage());
+
+        boolean success = false;
+        if (code.getCode() == 0) {
+            success = true;
+        }
+        apiResponse.setSuccess(success);
+
+        return ResponseEntity.status(code.getStatus()).body(apiResponse);
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<Void>> handlingMethodArgumentNotValidException(
             MethodArgumentNotValidException exception) {
