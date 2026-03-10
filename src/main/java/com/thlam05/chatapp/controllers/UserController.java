@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.thlam05.chatapp.dto.request.NotificationRequest;
 import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.NotificationResponse;
+import com.thlam05.chatapp.dto.response.UserFriendResponse;
 import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.services.NotificationService;
+import com.thlam05.chatapp.services.UserFriendsService;
 import com.thlam05.chatapp.services.UserService;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/users")
 public class UserController {
     UserService userService;
+    UserFriendsService userFriendsService;
 
     NotificationService notificationService;
 
@@ -33,6 +36,12 @@ public class UserController {
 
         ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>(listUsers);
         return apiResponse;
+    }
+
+    @GetMapping("/{userId}/friends")
+    public ApiResponse<List<UserFriendResponse>> getAllFriendsOfUser(@PathVariable String userId) {
+        List<UserFriendResponse> listUserFriendResponses = userFriendsService.getAllFriendsOfUser(userId);
+        return new ApiResponse<>(listUserFriendResponses);
     }
 
     @PostMapping("/{userId}/notifications")
