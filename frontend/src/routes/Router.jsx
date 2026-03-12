@@ -5,6 +5,7 @@ import HomePage from "../pages/HomePage";
 import ChatPage from "../pages/ChatPage";
 import FriendPage from "../pages/FriendPage";
 import SettingPage from "../pages/SettingPage";
+import RegisterPage from "../pages/RegisterPage";
 
 const router = createBrowserRouter([
   {
@@ -13,10 +14,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <HomePage />
-      },
-      {
-        path: "/auth/login",
-        element: <LoginPage />
       },
       {
         path: "/chat",
@@ -32,6 +29,14 @@ const router = createBrowserRouter([
       }
     ]
   },
+  {
+    path: "/auth/login",
+    element: <LoginPage />
+  },
+  {
+    path: "/auth/register",
+    element: <RegisterPage />
+  }
 ]);
 
 export default router;

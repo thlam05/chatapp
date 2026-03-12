@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <div className="h-screen flex items-center justify-center bg-[#f6f7fb]">
 
@@ -18,12 +18,18 @@ export default function LoginPage() {
           </Link>
 
           <h2 className="text-2xl font-bold mx-auto">
-            Sign in to your account
+            Create your account
           </h2>
 
         </div>
 
         <form className="space-y-4">
+
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:border-purple-400"
+          />
 
           <input
             type="email"
@@ -37,21 +43,27 @@ export default function LoginPage() {
             className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:border-purple-400"
           />
 
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:border-purple-400"
+          />
+
           <button
             className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white p-3 rounded-lg font-semibold hover:opacity-90 transition"
           >
-            Login
+            Register
           </button>
 
         </form>
 
         <p className="text-sm text-gray-500 text-center mt-6">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <Link
-            to="/auth/register"
+            to="/auth/login"
             className="text-purple-600 font-medium hover:underline"
           >
-            Register
+            Login
           </Link>
         </p>
 
