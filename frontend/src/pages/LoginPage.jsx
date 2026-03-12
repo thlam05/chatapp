@@ -1,7 +1,28 @@
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router";
 
 export default function LoginPage() {
+  const { user, login } = useAuth();
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const form = new FormData(e.target);
+
+    const username = form.get("username");
+    const password = form.get("password");
+
+    const success = await login({ username, password });
+
+    if (success) {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="h-screen flex items-center justify-center bg-[#f6f7fb]">
 
@@ -23,21 +44,23 @@ export default function LoginPage() {
 
         </div>
 
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
 
           <input
-            type="email"
-            placeholder="Email"
+            name="username"
+            placeholder="Username"
             className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:border-purple-400"
           />
 
           <input
+            name="password"
             type="password"
             placeholder="Password"
             className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:border-purple-400"
           />
 
           <button
+            type="submit"
             className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white p-3 rounded-lg font-semibold hover:opacity-90 transition"
           >
             Login
