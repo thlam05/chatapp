@@ -23,11 +23,11 @@ const router = createBrowserRouter([
         element: <ChatPage />
       },
       {
-        path: "/friend",
+        path: "/friends",
         element: <FriendPage />
       },
       {
-        path: "/setting",
+        path: "/settings",
         element: <SettingPage />
       }
     ]

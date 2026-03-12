@@ -9,10 +9,29 @@ export default function Sidebar() {
 
       <nav className="space-y-2">
 
-        <SidebarItem icon={<Home size={18} />} text="Dashboard" />
-        <SidebarItem icon={<MessageCircle size={18} />} text="Chat" />
-        <SidebarItem icon={<Users size={18} />} text="Friends" />
-        <SidebarItem icon={<Settings size={18} />} text="Settings" />
+        <SidebarItem
+          icon={<Home size={18} />}
+          text="Dashboard"
+          to="/"
+        />
+
+        <SidebarItem
+          icon={<MessageCircle size={18} />}
+          text="Chat"
+          to="/chat"
+        />
+
+        <SidebarItem
+          icon={<Users size={18} />}
+          text="Friends"
+          to="/friends"
+        />
+
+        <SidebarItem
+          icon={<Settings size={18} />}
+          text="Settings"
+          to="/settings"
+        />
 
       </nav>
 

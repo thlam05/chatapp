@@ -1,15 +1,19 @@
-export default function SidebarItem({ icon, text }) {
+import { NavLink } from "react-router-dom";
+
+export default function SidebarItem({ icon, text, to }) {
   return (
-    <div className="flex items-center gap-3 p-2.5 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-
-      <div className="text-gray-600">
-        {icon}
-      </div>
-
-      <span className="text-sm font-medium">
-        {text}
-      </span>
-
-    </div>
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `flex items-center gap-2 p-2 rounded-lg cursor-pointer transition
+        ${isActive
+          ? "bg-purple-50 text-purple-600 border border-purple-200"
+          : "hover:bg-gray-100 text-gray-700"
+        }`
+      }
+    >
+      {icon}
+      <span>{text}</span>
+    </NavLink>
   );
 }

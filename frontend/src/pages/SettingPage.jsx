@@ -2,13 +2,13 @@ import { User, Lock } from "lucide-react";
 
 export default function SettingPage() {
   return (
-    <div className="h-full flex justify-center bg-[#f6f7fb] min-h-screen">
+    <div className="h-full bg-[#f6f7fb] flex justify-center">
 
-      <div className="w-full bg-white border border-gray-200 rounded-xl">
+      <div className="w-full bg-white border border-gray-200 flex flex-col">
 
         {/* Header */}
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">
+          <h2 className="font-semibold text-gray-800">
             Settings
           </h2>
         </div>
