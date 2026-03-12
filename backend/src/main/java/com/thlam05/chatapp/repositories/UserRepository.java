@@ -10,4 +10,5 @@ import com.thlam05.chatapp.models.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByUsername(String username);
+
 }

@@ -1,4 +1,32 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import * as userService from "../services/UserService";
+
 export default function HomePage() {
+  const { user, isAuthenticated, token } = useAuth();
+
+  const [totalMessages, setTotalMessages] = useState(0);
+  const [totalFriends, setTotalFriends] = useState(0);
+  const [totalChats, setTotalChats] = useState(0);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchData = async () => {
+      const [messages, friends, chats] = await Promise.all([
+        userService.getTotalMessages(user.id, token),
+        userService.getTotalFriends(user.id, token),
+        userService.getTotalChats(user.id, token),
+      ]);
+
+      setTotalMessages(messages);
+      setTotalFriends(friends);
+      setTotalChats(chats);
+    };
+
+    fetchData();
+  }, [isAuthenticated, user, token]);
+
   return (
     <main className="p-6 flex-1 overflow-auto bg-[#f6f7fb]">
 
@@ -10,17 +38,17 @@ export default function HomePage() {
 
         <div className="bg-white p-6 rounded-xl border border-gray-200">
           <p className="text-gray-500 text-sm">Total Messages</p>
-          <div className="text-2xl font-bold mt-2">124</div>
+          <div className="text-2xl font-bold mt-2">{totalMessages}</div>
         </div>
 
         <div className="bg-white p-6 rounded-xl border border-gray-200">
           <p className="text-gray-500 text-sm">Friends</p>
-          <div className="text-2xl font-bold mt-2">18</div>
+          <div className="text-2xl font-bold mt-2">{totalFriends}</div>
         </div>
 
         <div className="bg-white p-6 rounded-xl border border-gray-200">
           <p className="text-gray-500 text-sm">Active Chats</p>
-          <div className="text-2xl font-bold mt-2">5</div>
+          <div className="text-2xl font-bold mt-2">{totalChats}</div>
         </div>
 
       </div>

@@ -48,4 +48,8 @@ public class Message {
     @JoinColumn(name = "conversation_id")
     @ManyToOne
     Conversation conversation;
+
+    @JoinColumn(name = "user_id")
+    @ManyToOne
+    User user;
 }

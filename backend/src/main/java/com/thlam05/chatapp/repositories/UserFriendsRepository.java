@@ -17,4 +17,12 @@ public interface UserFriendsRepository extends JpaRepository<UserFriends, IdUser
             WHERE uf.user.id = :userId OR uf.friend.id = :userId
             """)
     List<UserFriends> findFriends(@Param("userId") String userId);
+
+    @Query("""
+            SELECT COUNT(uf)
+            FROM user_friends uf
+            WHERE uf.user.id = :userId
+            OR uf.friend.id = :userId
+                """)
+    Long countTotalFriendsByUser(String userId);
 }

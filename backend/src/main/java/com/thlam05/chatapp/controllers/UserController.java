@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.thlam05.chatapp.dto.request.NotificationRequest;
 import com.thlam05.chatapp.dto.response.ApiResponse;
+import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.dto.response.NotificationResponse;
 import com.thlam05.chatapp.dto.response.UserFriendResponse;
 import com.thlam05.chatapp.dto.response.UserResponse;
@@ -42,6 +43,27 @@ public class UserController {
     public ApiResponse<List<UserFriendResponse>> getAllFriendsOfUser(@PathVariable String userId) {
         List<UserFriendResponse> listUserFriendResponses = userFriendsService.getAllFriendsOfUser(userId);
         return new ApiResponse<>(listUserFriendResponses);
+    }
+
+    @GetMapping("/{userId}/messages/count")
+    public ApiResponse<CountResponse> countTotalMessagesByUser(@PathVariable String userId) {
+        CountResponse countResponse = userService.countTotalMessagesByUser(userId);
+
+        return new ApiResponse<>(countResponse);
+    }
+
+    @GetMapping("/{userId}/friends/count")
+    public ApiResponse<CountResponse> countTotalFriendsByUser(@PathVariable String userId) {
+        CountResponse countResponse = userService.countTotalFriendsByUser(userId);
+
+        return new ApiResponse<>(countResponse);
+    }
+
+    @GetMapping("{userId}/conversations/count")
+    public ApiResponse<CountResponse> countTotalConversationsByUser(@PathVariable String userId) {
+        CountResponse countResponse = userService.countTotalConversationsByUser(userId);
+
+        return new ApiResponse<>(countResponse);
     }
 
     @PostMapping("/{userId}/notifications")
