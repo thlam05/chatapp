@@ -4,12 +4,12 @@ import Message from "../components/Message";
 
 export default function ChatPage() {
   return (
-    <div className="flex h-full bg-[#f6f7fb]">
+    <div className="h-full bg-[#f6f7fb] flex justify-center">
 
       {/* Conversation List */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+      <div className="w-80 bg-white bg-white border border-gray-200 flex flex-col">
 
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-white">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 bg-white">
 
           <h2 className="font-semibold text-gray-800">
             Conversations
@@ -39,7 +39,7 @@ export default function ChatPage() {
 
 
       {/* Chat Window */}
-      <div className="flex-1 flex flex-col border-r border-gray-200">
+      <div className="flex-1 flex flex-col bg-white border-r border-t border-b  border-gray-200">
 
         {/* Chat header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 bg-white">

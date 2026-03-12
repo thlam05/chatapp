@@ -5,6 +5,7 @@ import HomePage from "../pages/HomePage";
 import ChatPage from "../pages/ChatPage";
 import FriendPage from "../pages/FriendPage";
 import SettingPage from "../pages/SettingPage";
+import RegisterPage from "../pages/RegisterPage";
 
 const router = createBrowserRouter([
   {
@@ -15,23 +16,27 @@ const router = createBrowserRouter([
         element: <HomePage />
       },
       {
-        path: "/auth/login",
-        element: <LoginPage />
-      },
-      {
         path: "/chat",
         element: <ChatPage />
       },
       {
-        path: "/friend",
+        path: "/friends",
         element: <FriendPage />
       },
       {
-        path: "/setting",
+        path: "/settings",
         element: <SettingPage />
       }
     ]
   },
+  {
+    path: "/auth/login",
+    element: <LoginPage />
+  },
+  {
+    path: "/auth/register",
+    element: <RegisterPage />
+  }
 ]);
 
 export default router;
