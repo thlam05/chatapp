@@ -1,6 +1,7 @@
 package com.thlam05.chatapp.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,4 +21,5 @@ public class ConversationResponse {
     String name;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+    List<MessageResponse> messages;
 }

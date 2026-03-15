@@ -1,8 +1,30 @@
 import { Send, Plus, MoreVertical } from "lucide-react";
 import ChatItem from "../components/ChatItem";
 import Message from "../components/Message";
+import { useAuth } from "../contexts/AuthContext";
+import { useEffect, useState } from "react";
+import * as ChatService from "../services/ChatService";
 
 export default function ChatPage() {
+  const { user, isAuthenticated, token } = useAuth();
+
+  const [listChats, setListChats] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchChats = async () => {
+      try {
+        const list = await ChatService.getListChatByUser(user.id, token);
+        setListChats(list);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchChats();
+  }, [user, isAuthenticated, token]);
+
   return (
     <div className="h-full bg-[#f6f7fb] flex justify-center">
 
@@ -23,15 +45,6 @@ export default function ChatPage() {
         </div>
 
         <div className="flex-1 overflow-auto p-3 space-y-2">
-
-          <ChatItem
-            avatar="https://i.pravatar.cc/40?img=1"
-            name="Alice"
-            message="Hey, are you free tonight?"
-            active
-          />
-          <ChatItem avatar="https://i.pravatar.cc/40?img=1" name="Bob" message="See you later" />
-          <ChatItem avatar="https://i.pravatar.cc/40?img=1" name="Charlie" message="Let's meet tomorrow" />
 
         </div>
 

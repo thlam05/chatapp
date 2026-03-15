@@ -15,4 +15,5 @@ public interface ConversationMembersRepository extends JpaRepository<Conversatio
             WHERE cm.user.id = :userId
                 """)
     Long countTotalConversationsByUser(String userId);
+
 }

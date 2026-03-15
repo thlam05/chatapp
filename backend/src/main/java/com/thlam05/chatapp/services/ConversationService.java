@@ -27,6 +27,11 @@ public class ConversationService {
         return listResponses;
     }
 
+    public List<ConversationResponse> getAllConversationsByUser(String userId) {
+        List<Conversation> list = conversationRepository.getListConversationsByUser(userId);
+        return conversationMapper.toListConversationResponses(list);
+    }
+
     public ConversationResponse createConversation(CreateConversationRequest createConversationRequest) {
         Conversation conversation = Conversation.builder()
                 .name(createConversationRequest.getName())

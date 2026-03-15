@@ -26,6 +26,10 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
+    if (!res.ok) {
+      throw new Error("Request failed");
+    }
+
     const response = await res.json();
 
     if (response.data) {
@@ -44,6 +48,10 @@ export const AuthProvider = ({ children }) => {
       },
       body: JSON.stringify({ username, password })
     });
+
+    if (!res.ok) {
+      throw new Error("Request failed");
+    }
 
     const response = await res.json();
 
@@ -67,6 +75,10 @@ export const AuthProvider = ({ children }) => {
       },
       body: JSON.stringify({ username, password })
     });
+
+    if (!res.ok) {
+      throw new Error("Request failed");
+    }
 
     const response = await res.json();
 

@@ -2,8 +2,6 @@ package com.thlam05.chatapp.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.thlam05.chatapp.models.Conversation;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,5 +22,5 @@ public class MessageResponse {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     boolean seen;
-    Conversation conversation;
+    // Conversation conversation;
 }

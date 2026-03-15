@@ -1,4 +1,4 @@
-export default function ChatItem({ avatar, name, message, active }) {
+export default function ChatItem({ name, message, active }) {
   return (
     <div
       className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition
@@ -7,12 +7,9 @@ export default function ChatItem({ avatar, name, message, active }) {
           : "border-gray-200 hover:bg-gray-50"}
       `}
     >
-      {/* Avatar */}
-      <img
-        src={avatar}
-        alt={name}
-        className="w-10 h-10 rounded-full object-cover"
-      />
+      <div className="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center font-semibold">
+        {name?.charAt(0).toUpperCase()}
+      </div>
 
       {/* Text */}
       <div className="flex-1 overflow-hidden">

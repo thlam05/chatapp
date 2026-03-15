@@ -12,7 +12,6 @@ export async function getTotalMessages(userId, token) {
   const response = await res.json();
 
   if (response.success) {
-    console.log(response);
     return response.data.count;
   }
 }
@@ -29,7 +28,6 @@ export async function getTotalFriends(userId, token) {
   const response = await res.json();
 
   if (response.success) {
-    console.log(response);
     return response.data.count;
   }
 }
@@ -46,7 +44,6 @@ export async function getTotalChats(userId, token) {
   const response = await res.json();
 
   if (response.success) {
-    console.log(response);
     return response.data.count;
   }
 }

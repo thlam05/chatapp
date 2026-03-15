@@ -2,8 +2,6 @@ package com.thlam05.chatapp.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.thlam05.chatapp.models.User;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +17,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserFriendResponse {
-    User user;
-    User friend;
+    UserResponse user;
     String status;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

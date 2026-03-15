@@ -29,6 +29,8 @@ public class ConversationMembers {
     @EmbeddedId
     IdComversationMembers id;
 
+    String role;
+
     @ManyToOne
     @MapsId("userId")
     private User user;
