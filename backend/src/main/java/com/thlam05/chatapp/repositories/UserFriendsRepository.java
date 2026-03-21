@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.thlam05.chatapp.models.UserFriends;
@@ -13,10 +12,13 @@ import com.thlam05.chatapp.types.IdUserFriends;
 @Repository
 public interface UserFriendsRepository extends JpaRepository<UserFriends, IdUserFriends> {
     @Query("""
-            SELECT uf FROM user_friends uf
-            WHERE uf.user.id = :userId OR uf.friend.id = :userId
+                SELECT uf
+                FROM user_friends uf
+                JOIN FETCH uf.user
+                JOIN FETCH uf.friend
+                WHERE uf.user.id = :userId OR uf.friend.id = :userId
             """)
-    List<UserFriends> findFriends(@Param("userId") String userId);
+    List<UserFriends> findFriends(String userId);
 
     @Query("""
             SELECT COUNT(uf)

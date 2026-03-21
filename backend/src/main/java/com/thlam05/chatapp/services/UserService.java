@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.thlam05.chatapp.dto.response.ConversationResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
-import com.thlam05.chatapp.dto.response.UserFriendResponse;
 import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.mappers.UserMapper;
 import com.thlam05.chatapp.models.User;
@@ -34,12 +32,6 @@ public class UserService {
 
         return listResponses;
     }
-
-    // public List<UserFriendResponse> getAllFriendOfUser(String userId) {
-    // List<User> listUsers = userRepository.findAll();
-
-    // return null;
-    // }
 
     public CountResponse countTotalFriendsByUser(String userId) {
         Long count = userFriendsRepository.countTotalFriendsByUser(userId);

@@ -32,7 +32,8 @@ public class ConversationService {
         return conversationMapper.toListConversationResponses(list);
     }
 
-    public ConversationResponse createConversation(CreateConversationRequest createConversationRequest) {
+    public ConversationResponse createConversation(CreateConversationRequest createConversationRequest,
+            String adminId) {
         Conversation conversation = Conversation.builder()
                 .name(createConversationRequest.getName())
                 .group(createConversationRequest.isGroup())

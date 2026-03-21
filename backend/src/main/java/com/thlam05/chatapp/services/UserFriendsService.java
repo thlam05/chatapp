@@ -9,6 +9,7 @@ import com.thlam05.chatapp.dto.response.UserFriendResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
 import com.thlam05.chatapp.mappers.UserFriendMapper;
+import com.thlam05.chatapp.mappers.UserMapper;
 import com.thlam05.chatapp.models.User;
 import com.thlam05.chatapp.models.UserFriends;
 import com.thlam05.chatapp.repositories.UserFriendsRepository;
@@ -23,6 +24,7 @@ public class UserFriendsService {
     UserFriendsRepository userFriendsRepository;
     UserRepository userRepository;
     UserFriendMapper userFriendMapper;
+    UserMapper userMapper;
 
     public List<UserFriendResponse> getAllUserFriends() {
         List<UserFriends> list = userFriendsRepository.findAll();
@@ -30,10 +32,23 @@ public class UserFriendsService {
         return userFriendMapper.toListUserFriendResponses(list);
     }
 
-    public List<UserFriendResponse> getAllFriendsOfUser(String userId) {
+    public List<UserFriendResponse> getListFriendsOfUser(String userId) {
         List<UserFriends> list = userFriendsRepository.findFriends(userId);
 
-        return userFriendMapper.toListUserFriendResponses(list);
+        List<UserFriendResponse> listResponses = list.stream().map(uf -> {
+            User friend = uf.getUser().getId().equals(userId)
+                    ? uf.getUser()
+                    : uf.getFriend();
+
+            return UserFriendResponse.builder()
+                    .user(userMapper.toUserResponse(friend))
+                    .status(uf.getStatus())
+                    .createdAt(uf.getCreatedAt())
+                    .updatedAt(uf.getUpdatedAt())
+                    .build();
+        }).toList();
+
+        return listResponses;
     }
 
     public UserFriendResponse createUserFriend(String userId, String friendId,
