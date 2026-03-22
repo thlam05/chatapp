@@ -1,6 +1,6 @@
 import { Outlet, useNavigation } from "react-router";
-import Sidebar from "../components/Sidebar";
-import Topbar from "../components/Topbar";
+import Sidebar from "../components/bars/Sidebar";
+import Topbar from "../components/bars/Topbar";
 
 export default function MainLayout() {
   const navigation = useNavigation();

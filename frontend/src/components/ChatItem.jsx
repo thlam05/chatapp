@@ -22,7 +22,7 @@ export default function ChatItem({ name, message, active, onClick }) {
         </div>
 
         <div className="text-xs text-gray-500 truncate">
-          {message.content}
+          {message && message.content}
         </div>
       </div>
     </div>

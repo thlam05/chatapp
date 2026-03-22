@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { UserPlus, X } from "lucide-react";
-import * as UserService from "../services/UserService";
-import { useAuth } from "../contexts/AuthContext";
+import * as UserService from "../../services/UserService";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function AddMemberModal({
 	isOpen,

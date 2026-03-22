@@ -1,6 +1,6 @@
 import { Home, MessageCircle, Users, Settings, LogOut } from "lucide-react";
 import SidebarItem from "./SidebarItem";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router";
 
 export default function Sidebar() {

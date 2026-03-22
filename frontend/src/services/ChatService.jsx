@@ -89,3 +89,24 @@ export async function deleteChat({ conversationId, token }) {
 
   console.log(response);
 }
+
+export async function createChat({ name, token }) {
+  const res = await fetch(`${config.BASE_API}/conversations`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ name, isGroup: true })
+  })
+  if (!res.ok) {
+    throw new Error("Request failed");
+  }
+
+  const response = await res.json();
+
+  if (response.success) {
+    console.log(response);
+    return response.data;
+  }
+}

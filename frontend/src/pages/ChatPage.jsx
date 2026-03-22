@@ -1,11 +1,13 @@
 import { Send, Plus, MoreVertical, UserPlus, Trash } from "lucide-react";
 import ChatItem from "../components/ChatItem";
 import Message from "../components/Message";
-import AddMemberModal from "../components/AddMemberModal";
-import ConfirmModal from "../components/ConfirmModal";
+import AddMemberModal from "../components/modals/AddMemberModal";
+import ConfirmModal from "../components/modals/ConfirmModal";
+import AddChatModal from "../components/modals/AddChatModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import * as ChatService from "../services/ChatService";
+import { pre } from "framer-motion/client";
 
 export default function ChatPage() {
   const { user, isAuthenticated, token } = useAuth();
@@ -15,6 +17,7 @@ export default function ChatPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalAddMemberOpen, setIsModalAddMemberOpen] = useState(false);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
+  const [isOpenCreateChatModal, setIsOpenCreateChatModal] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -44,7 +47,7 @@ export default function ChatPage() {
 
     setChatActive(prev => ({
       ...prev,
-      messages: [...prev.messages, message]
+      messages: [...prev.messages || [], message]
     }));
   }
 
@@ -60,6 +63,23 @@ export default function ChatPage() {
 
   async function handleDeleteChat() {
     ChatService.deleteChat({ conversationId: chatActive.id, token })
+
+    setListChats(prev => {
+      return prev.filter(chat => {
+        chat.id !== chatActive.id
+      })
+    })
+    setChatActive(null);
+  }
+
+
+  async function handleCreateChat({ name }) {
+    const chat = await ChatService.createChat({ name, token });
+
+    setChatActive(chat);
+    setListChats(prev => ([
+      ...prev, chat
+    ]));
   }
 
   return (
@@ -74,7 +94,9 @@ export default function ChatPage() {
             Conversations
           </h2>
 
-          <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition">
+          <button
+            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition"
+            onClick={() => setIsOpenCreateChatModal(true)} >
             <Plus size={16} className="text-white" />
             Create
           </button>
@@ -152,7 +174,7 @@ export default function ChatPage() {
         </div>
 
         <div className="flex-1 p-6 overflow-auto space-y-4">
-          {chatActive && chatActive.messages.map((message) => {
+          {chatActive && chatActive.messages && chatActive.messages.map((message) => {
             return (
               (message.user.id === user.id)
                 ? <Message key={message.id} text={message.content} mine />
@@ -198,6 +220,14 @@ export default function ChatPage() {
         danger
         onConfirm={() => { handleDeleteChat(); setIsOpenConfirmModal(false); }}
         onCancel={() => setIsOpenConfirmModal(false)}
+      />
+
+      <AddChatModal
+        open={isOpenCreateChatModal}
+        onClose={() => setIsOpenCreateChatModal(false)}
+        onCreate={(data) => {
+          handleCreateChat(data);
+        }}
       />
     </div>
   );
