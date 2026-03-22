@@ -8,10 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AppException extends RuntimeException {
-    private ResponseCode code;
+    private ResponseCode responseCode;
 
-    public AppException(ResponseCode code) {
-        super(code.getMessage());
-        this.code = code;
+    public AppException(ResponseCode responseCode) {
+        super(responseCode.getMessage());
+        this.responseCode = responseCode;
     }
 }

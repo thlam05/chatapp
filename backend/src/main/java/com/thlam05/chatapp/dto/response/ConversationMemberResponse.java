@@ -1,7 +1,6 @@
 package com.thlam05.chatapp.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,12 +14,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ConversationResponse {
-    String id;
-    boolean group;
-    String name;
+public class ConversationMemberResponse {
+    UserResponse user;
+    String role;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    List<MessageResponse> messages;
-    List<ConversationMemberResponse> members;
 }

@@ -13,17 +13,11 @@ import com.thlam05.chatapp.enums.ResponseCode;
 public class GlobleHandlingException {
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse<Void>> handlingAppException(AppException exception) {
-        ResponseCode code = exception.getCode();
-        ApiResponse<Void> apiResponse = new ApiResponse<>(null);
-
-        apiResponse.setCode(code.getCode());
-        apiResponse.setMessage(code.getMessage());
-
-        boolean success = false;
-        if (code.getCode() == 0) {
-            success = true;
+        ResponseCode code = exception.getResponseCode();
+        if (code == null) {
+            code = ResponseCode.INTERNAL_SERVER_ERROR;
         }
-        apiResponse.setSuccess(success);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(code);
 
         return ResponseEntity.status(code.getStatus()).body(apiResponse);
     }
