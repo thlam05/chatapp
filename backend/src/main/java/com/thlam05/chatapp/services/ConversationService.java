@@ -8,13 +8,16 @@ import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.thlam05.chatapp.dto.request.AddConversationMemberRequest;
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
+import com.thlam05.chatapp.dto.response.AddConversationMemberResponse;
 import com.thlam05.chatapp.dto.response.ConversationResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.enums.MemberRole;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
 import com.thlam05.chatapp.mappers.ConversationMapper;
+import com.thlam05.chatapp.mappers.ConversationMemberMapper;
 import com.thlam05.chatapp.models.Conversation;
 import com.thlam05.chatapp.models.ConversationMembers;
 import com.thlam05.chatapp.models.User;
@@ -33,6 +36,8 @@ public class ConversationService {
     ConversationRepository conversationRepository;
 
     ConversationMapper conversationMapper;
+
+    ConversationMemberMapper conversationMemberMapper;
 
     public List<ConversationResponse> getAllConversations() {
         List<Conversation> listConversations = conversationRepository.findAll();
@@ -80,5 +85,22 @@ public class ConversationService {
         Long count = conversationMembersRepository.countTotalConversationsByUser(userId);
 
         return new CountResponse(count);
+    }
+
+    public AddConversationMemberResponse addConversationMember(AddConversationMemberRequest request,
+            String conversationId) {
+        Conversation conversation = conversationRepository.getReferenceById(conversationId);
+        User user = userRepository.getReferenceById(request.getUserId());
+
+        ConversationMembers conversationMembers = ConversationMembers.builder()
+                .conversation(conversation)
+                .user(user)
+                .id(new IdConversationMembers(user.getId(), conversationId))
+                .role(request.getRole())
+                .build();
+
+        conversationMembers = conversationMembersRepository.save(conversationMembers);
+
+        return conversationMemberMapper.toAddConversationMemberResponse(conversationMembers);
     }
 }

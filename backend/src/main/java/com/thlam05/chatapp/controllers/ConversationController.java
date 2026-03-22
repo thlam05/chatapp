@@ -2,7 +2,9 @@ package com.thlam05.chatapp.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.thlam05.chatapp.dto.request.AddConversationMemberRequest;
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
+import com.thlam05.chatapp.dto.response.AddConversationMemberResponse;
 import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.ConversationResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
@@ -52,6 +54,13 @@ public class ConversationController {
         ConversationResponse conversationResponse = conversationService.createConversation(createConversationRequest);
 
         return new ApiResponse<>(conversationResponse);
+    }
+
+    @PostMapping("/conversations/{conversationId}/members")
+    public ApiResponse<AddConversationMemberResponse> postMethodName(@RequestBody AddConversationMemberRequest request,
+            @PathVariable String conversationId) {
+        AddConversationMemberResponse response = conversationService.addConversationMember(request, conversationId);
+        return new ApiResponse<>(response);
     }
 
     @DeleteMapping("/conversations/{conversationId}")

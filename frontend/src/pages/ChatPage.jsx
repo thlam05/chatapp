@@ -176,7 +176,6 @@ export default function ChatPage() {
         onClose={() => setIsModalAddMemberOpen(false)}
         onAddMember={handleAddMember}
         token={token}
-        userId={user.id}
       />
     </div>
   );

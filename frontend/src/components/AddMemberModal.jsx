@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { UserPlus, X } from "lucide-react";
 import * as UserService from "../services/UserService";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function AddMemberModal({
     isOpen,
     onClose,
     onAddMember,
-    token,
-    userId
+    token
 }) {
+    const { user } = useAuth();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -21,7 +22,7 @@ export default function AddMemberModal({
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const userList = await UserService.getFriendsOfUser({ userId, token });
+            const userList = await UserService.getFriendsOfUser({ userId: user.id, token });
             console.log(userList);
             setUsers(userList);
         } catch (error) {
