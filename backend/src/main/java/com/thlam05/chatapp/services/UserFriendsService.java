@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.thlam05.chatapp.dto.request.UserFriendRequest;
 import com.thlam05.chatapp.dto.response.CountResponse;
+import com.thlam05.chatapp.dto.response.CreateUserFriendResponse;
 import com.thlam05.chatapp.dto.response.UserFriendResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
@@ -38,7 +39,7 @@ public class UserFriendsService {
 
         List<UserFriendResponse> listResponses = list.stream().map(uf -> {
             User friend = uf.getUser().getId().equals(userId)
-                    ? uf.getUser()
+                    ? uf.getFriend()
                     : uf.getFriend();
 
             return UserFriendResponse.builder()
@@ -52,7 +53,7 @@ public class UserFriendsService {
         return listResponses;
     }
 
-    public UserFriendResponse createUserFriend(String userId, String friendId,
+    public CreateUserFriendResponse createUserFriend(String userId, String friendId,
             UserFriendRequest createFriendRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
 
@@ -71,7 +72,8 @@ public class UserFriendsService {
         return userFriendMapper.toUserFriendResponse(userFriends);
     }
 
-    public UserFriendResponse updateUserFriends(String userId, String friendId, UserFriendRequest userFriendRequest) {
+    public CreateUserFriendResponse updateUserFriends(String userId, String friendId,
+            UserFriendRequest userFriendRequest) {
         UserFriends userFriends = userFriendsRepository
                 .findById(new IdUserFriends(userId, friendId))
                 .orElseGet(() -> userFriendsRepository

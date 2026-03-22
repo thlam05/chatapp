@@ -3,7 +3,7 @@ import ChatItem from "../components/ChatItem";
 import Message from "../components/Message";
 import AddMemberModal from "../components/AddMemberModal";
 import { useAuth } from "../contexts/AuthContext";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import * as ChatService from "../services/ChatService";
 
 export default function ChatPage() {
@@ -176,6 +176,7 @@ export default function ChatPage() {
         onClose={() => setIsModalAddMemberOpen(false)}
         onAddMember={handleAddMember}
         token={token}
+        userId={user.id}
       />
     </div>
   );

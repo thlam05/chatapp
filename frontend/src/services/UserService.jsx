@@ -76,6 +76,7 @@ export async function getFriendsOfUser({ userId, token }) {
   const response = await res.json();
 
   if (response.success) {
+    console.log(response.data);
     return response.data;
   }
 }

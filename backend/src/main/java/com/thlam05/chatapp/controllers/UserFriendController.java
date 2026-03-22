@@ -6,12 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.thlam05.chatapp.dto.request.UserFriendRequest;
 import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
+import com.thlam05.chatapp.dto.response.CreateUserFriendResponse;
 import com.thlam05.chatapp.dto.response.UserFriendResponse;
 import com.thlam05.chatapp.services.UserFriendsService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @AllArgsConstructor
@@ -31,4 +35,14 @@ public class UserFriendController {
 
         return new ApiResponse<>(countResponse);
     }
+
+    @PostMapping("/users/{userId}/friends/{friendId}")
+    public ApiResponse<CreateUserFriendResponse> createFriend(@PathVariable String userId,
+            @PathVariable String friendId, @RequestBody UserFriendRequest userFriendRequest) {
+        CreateUserFriendResponse createUserFriendResponse = userFriendsService.createUserFriend(userId, friendId,
+                userFriendRequest);
+
+        return new ApiResponse<>(createUserFriendResponse);
+    }
+
 }
