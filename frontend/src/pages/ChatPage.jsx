@@ -1,6 +1,7 @@
 import { Send, Plus, MoreVertical, UserPlus } from "lucide-react";
 import ChatItem from "../components/ChatItem";
 import Message from "../components/Message";
+import AddMemberModal from "../components/AddMemberModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState, useRef } from "react";
 import * as ChatService from "../services/ChatService";
@@ -11,7 +12,7 @@ export default function ChatPage() {
   const [listChats, setListChats] = useState([]);
   const [chatActive, setChatActive] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isModelAddMemberOpen, setIsModelAddMemberOpen] = useState(false);
+  const [isModalAddMemberOpen, setIsModalAddMemberOpen] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -43,6 +44,16 @@ export default function ChatPage() {
       ...prev,
       messages: [...prev.messages, message]
     }));
+  }
+
+  async function handleAddMember(user) {
+    try {
+      await ChatService.addMemberToChat({ conversationId: chatActive.id, userId: user.id, token });
+      setIsModalAddMemberOpen(false);
+      // Optionally, refresh the chat or show a success message
+    } catch (error) {
+      console.error("Error adding member:", error);
+    }
   }
 
   return (
@@ -115,7 +126,7 @@ export default function ChatPage() {
                     <ul className="py-2 text-sm text-gray-700">
                       {chatActive.group && (
                         <li className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors duration-200"
-                          onClick={() => console.log("TEST")}>
+                          onClick={() => setIsModalAddMemberOpen(true)}>
                           <UserPlus className="h-5 w-5 text-gray-500" />
                           <span className="text-gray-800 font-medium">Add Member</span>
                         </li>
@@ -157,11 +168,15 @@ export default function ChatPage() {
             </button>
 
           </form>
-
         </div>
-
       </div>
 
+      <AddMemberModal
+        isOpen={isModalAddMemberOpen}
+        onClose={() => setIsModalAddMemberOpen(false)}
+        onAddMember={handleAddMember}
+        token={token}
+      />
     </div>
   );
 }

@@ -1,15 +1,13 @@
 import { UserPlus } from "lucide-react";
 
-export default function FriendItem({ avatar, name, status }) {
+export default function FriendItem({ name, status }) {
   return (
     <div className="flex items-center justify-between p-4 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition">
 
       <div className="flex items-center gap-3">
-        <img
-          src={avatar}
-          alt={name}
-          className="w-10 h-10 rounded-full"
-        />
+        <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold bg-gray-500`}>
+          {name?.charAt(0).toUpperCase()}
+        </div>
 
         <div>
           <div className="font-medium text-gray-800">{name}</div>

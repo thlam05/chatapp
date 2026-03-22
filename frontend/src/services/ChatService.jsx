@@ -52,3 +52,26 @@ export async function sendMessage({ content, conversationId, userId, token }) {
 
   return null;
 }
+
+export async function addMemberToChat({ conversationId, userId, token }) {
+  const res = await fetch(`${config.BASE_API}/conversations/${conversationId}/members`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ userId })
+  })
+
+  if (!res.ok) {
+    throw new Error("Request failed");
+  }
+
+  const response = await res.json();
+
+  if (response.success) {
+    return response.data;
+  }
+
+  return null;
+}
