@@ -39,6 +39,11 @@ public class AuthService {
     }
 
     public UserResponse handleRegister(String username, String password) {
+        userRepository.findByUsername(username)
+                .ifPresent(user -> {
+                    throw new AppException(ResponseCode.USER_ALREADY_EXISTS);
+                });
+
         String passwordEncoded = passwordEncoder.encode(password);
 
         User user = User.builder()

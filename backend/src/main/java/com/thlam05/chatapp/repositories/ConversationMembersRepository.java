@@ -5,10 +5,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.thlam05.chatapp.models.ConversationMembers;
-import com.thlam05.chatapp.types.IdComversationMembers;
+import com.thlam05.chatapp.types.IdConversationMembers;
 
 @Repository
-public interface ConversationMembersRepository extends JpaRepository<ConversationMembers, IdComversationMembers> {
+public interface ConversationMembersRepository extends JpaRepository<ConversationMembers, IdConversationMembers> {
     @Query("""
             SELECT COUNT(cm)
             FROM conversation_members cm

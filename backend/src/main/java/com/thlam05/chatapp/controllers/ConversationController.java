@@ -33,7 +33,9 @@ public class ConversationController {
     public ApiResponse<ConversationResponse> createConversation(
             @RequestBody CreateConversationRequest createConversationRequest) {
 
-        return new ApiResponse<>();
+        ConversationResponse conversationResponse = conversationService.createConversation(createConversationRequest);
+
+        return new ApiResponse<>(conversationResponse);
     }
 
 }
