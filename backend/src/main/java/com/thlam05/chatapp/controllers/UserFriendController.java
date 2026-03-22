@@ -11,6 +11,7 @@ import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.dto.response.CreateUserFriendResponse;
 import com.thlam05.chatapp.dto.response.UserFriendResponse;
+import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.services.UserFriendsService;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +26,13 @@ public class UserFriendController {
     @GetMapping("/users/{userId}/friends")
     public ApiResponse<List<UserFriendResponse>> getListFriendsOfUser(@PathVariable String userId) {
         var list = userFriendsService.getListFriendsOfUser(userId);
+
+        return new ApiResponse<>(list);
+    }
+
+    @GetMapping("/users/{userId}/not-friends")
+    public ApiResponse<List<UserResponse>> getListNotFriendsOfUser(@PathVariable String userId) {
+        List<UserResponse> list = userFriendsService.getListNotFriendsOfUser(userId);
 
         return new ApiResponse<>(list);
     }

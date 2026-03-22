@@ -8,6 +8,7 @@ import com.thlam05.chatapp.dto.request.UserFriendRequest;
 import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.dto.response.CreateUserFriendResponse;
 import com.thlam05.chatapp.dto.response.UserFriendResponse;
+import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
 import com.thlam05.chatapp.mappers.UserFriendMapper;
@@ -51,6 +52,12 @@ public class UserFriendsService {
         }).toList();
 
         return listResponses;
+    }
+
+    public List<UserResponse> getListNotFriendsOfUser(String userId) {
+        List<User> list = userFriendsRepository.findNotFriends(userId);
+
+        return userMapper.toListUserResponse(list);
     }
 
     public CreateUserFriendResponse createUserFriend(String userId, String friendId,

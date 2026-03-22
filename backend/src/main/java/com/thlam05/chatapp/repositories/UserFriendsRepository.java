@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.thlam05.chatapp.models.User;
 import com.thlam05.chatapp.models.UserFriends;
 import com.thlam05.chatapp.types.IdUserFriends;
 
@@ -19,6 +20,20 @@ public interface UserFriendsRepository extends JpaRepository<UserFriends, IdUser
                 WHERE uf.user.id = :userId OR uf.friend.id = :userId
             """)
     List<UserFriends> findFriends(String userId);
+
+    @Query("""
+            SELECT u FROM users u
+            WHERE u.id <> :userId
+            AND u.id NOT IN (
+                SELECT CASE
+                    WHEN uf.user.id = :userId THEN uf.friend.id
+                    ELSE uf.user.id
+                END
+                FROM user_friends uf
+                WHERE uf.user.id = :userId OR uf.friend.id = :userId
+            )
+            """)
+    List<User> findNotFriends(String userId);
 
     @Query("""
             SELECT COUNT(uf)
