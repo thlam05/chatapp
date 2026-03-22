@@ -9,6 +9,7 @@ export default function AddFriendModal({
     onAddFriend,
     token
 }) {
+    const { user } = useAuth();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -21,7 +22,7 @@ export default function AddFriendModal({
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const userList = await UserService.getUsers({ token });
+            const userList = await UserService.getNotFriendsOfUser({ userId: user.id, token });
             console.log(userList);
             setUsers(userList);
         } catch (error) {
@@ -70,7 +71,7 @@ export default function AddFriendModal({
                             {users.map((user) => (
                                 <li
                                     key={user.id}
-                                    className="group flex items-center justify-between p-2 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+                                    className="group flex items-center justify-between p-2 rounded-md hover:bg-gray-50 transition-colors"
                                 >
                                     {/* Avatar + Name + Status */}
                                     <div className="flex items-center gap-3">
@@ -91,7 +92,7 @@ export default function AddFriendModal({
                                             e.stopPropagation(); // ngăn li onClick trigger
                                             onAddFriend(user);
                                         }}
-                                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-600 font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-black text-white font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity  cursor-pointer"
                                     >
                                         <UserPlus size={16} />
                                         Add

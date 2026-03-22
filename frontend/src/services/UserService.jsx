@@ -80,3 +80,20 @@ export async function getFriendsOfUser({ userId, token }) {
     return response.data;
   }
 }
+
+export async function getNotFriendsOfUser({ userId, token }) {
+  const res = await fetch(`${config.BASE_API}/users/${userId}/not-friends`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+  })
+
+  const response = await res.json();
+
+  if (response.success) {
+    console.log(response.data);
+    return response.data;
+  }
+}
