@@ -1,21 +1,25 @@
-import { Send, Plus, MoreVertical } from "lucide-react";
+import { Send, Plus, MoreVertical, UserPlus } from "lucide-react";
 import ChatItem from "../components/ChatItem";
 import Message from "../components/Message";
 import { useAuth } from "../contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as ChatService from "../services/ChatService";
 
 export default function ChatPage() {
   const { user, isAuthenticated, token } = useAuth();
 
   const [listChats, setListChats] = useState([]);
+  const [chatActive, setChatActive] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModelAddMemberOpen, setIsModelAddMemberOpen] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) return;
 
     const fetchChats = async () => {
       try {
-        const list = await ChatService.getListChatByUser(user.id, token);
+        const list = await ChatService.getListChatByUser({ userId: user.id, token });
+        console.log(list)
         setListChats(list);
       } catch (err) {
         console.error(err);
@@ -24,6 +28,22 @@ export default function ChatPage() {
 
     fetchChats();
   }, [user, isAuthenticated, token]);
+
+
+  async function handleSubmitSendMessage(e) {
+    e.preventDefault();
+
+    const form = new FormData(e.target);
+
+    const content = form.get("content");
+
+    const message = await ChatService.sendMessage({ content, conversationId: chatActive.id, userId: user.id, token });
+
+    setChatActive(prev => ({
+      ...prev,
+      messages: [...prev.messages, message]
+    }));
+  }
 
   return (
     <div className="h-full bg-[#f6f7fb] flex justify-center">
@@ -45,6 +65,17 @@ export default function ChatPage() {
         </div>
 
         <div className="flex-1 overflow-auto p-3 space-y-2">
+          {listChats && listChats.map(chat => {
+            return (
+              <ChatItem
+                key={chat.id}
+                name={chat.name}
+                message={chat.latestMessage}
+                active={chatActive?.id == chat.id}
+                onClick={() => { setChatActive(chat) }}
+              />
+            )
+          })}
 
         </div>
 
@@ -57,43 +88,66 @@ export default function ChatPage() {
         {/* Chat header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 bg-white">
 
-          <div className="flex items-center gap-3">
 
-            <img
-              src="https://i.pravatar.cc/40?img=1"
-              className="w-9 h-9 rounded-full"
-            />
 
-            <span className="font-medium">
-              Alice
-            </span>
+          {chatActive && (
+            <>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold bg-gray-500`}>
+                  {chatActive.name?.charAt(0).toUpperCase()}
+                </div>
 
-          </div>
+                <span className="font-medium">
+                  {chatActive.name}
+                </span>
+              </div>
 
-          <button className="p-2 rounded-lg hover:bg-gray-100">
-            <MoreVertical size={18} />
-          </button>
+              <div className="relative inline-block text-left">
+                <button
+                  className="p-2 rounded-lg hover:bg-gray-100"
+                  onClick={() => setIsMenuOpen(prev => !prev)}
+                >
+                  <MoreVertical size={18} />
+                </button>
 
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200">
+                    <ul className="py-2 text-sm text-gray-700">
+                      {chatActive.group && (
+                        <li className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+                          onClick={() => console.log("TEST")}>
+                          <UserPlus className="h-5 w-5 text-gray-500" />
+                          <span className="text-gray-800 font-medium">Add Member</span>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Messages */}
         <div className="flex-1 p-6 overflow-auto space-y-4">
-
-          <Message text="Hello!" />
-
-          <Message text="How are you?" />
-
-          <Message text="I'm good thanks!" mine />
+          {chatActive && chatActive.messages.map((message) => {
+            return (
+              (message.user.id === user.id)
+                ? <Message key={message.id} text={message.content} mine />
+                : <Message key={message.id} text={message.content} />
+            );
+          })}
 
         </div>
 
-        {/* Input */}
         <div className="p-4 border-t border-gray-200 bg-white">
 
-          <div className="flex items-center border border-gray-200 rounded-lg px-3 py-2">
+          <form
+            className="flex items-center border border-gray-200 rounded-lg px-3 py-2"
+            onSubmit={handleSubmitSendMessage}>
 
             <input
               type="text"
+              name="content"
               placeholder="Type a message..."
               className="flex-1 outline-none text-sm"
             />
@@ -102,7 +156,7 @@ export default function ChatPage() {
               <Send size={18} />
             </button>
 
-          </div>
+          </form>
 
         </div>
 
