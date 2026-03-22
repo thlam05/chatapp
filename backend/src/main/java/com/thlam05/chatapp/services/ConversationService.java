@@ -23,6 +23,7 @@ import com.thlam05.chatapp.models.ConversationMembers;
 import com.thlam05.chatapp.models.User;
 import com.thlam05.chatapp.repositories.ConversationMembersRepository;
 import com.thlam05.chatapp.repositories.ConversationRepository;
+import com.thlam05.chatapp.repositories.MessageRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -34,6 +35,8 @@ public class ConversationService {
     ConversationMembersRepository conversationMembersRepository;
 
     ConversationRepository conversationRepository;
+
+    MessageRepository messageRepository;
 
     ConversationMapper conversationMapper;
 
@@ -77,6 +80,10 @@ public class ConversationService {
     public void deleteConversation(String id) {
         Conversation conversation = conversationRepository.findById(id)
                 .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+
+        conversationMembersRepository.deleteByConversationId(id);
+
+        messageRepository.deleteByConversationId(id);
 
         conversationRepository.delete(conversation);
     }

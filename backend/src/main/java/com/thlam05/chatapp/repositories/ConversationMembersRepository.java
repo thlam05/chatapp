@@ -1,11 +1,15 @@
 package com.thlam05.chatapp.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.thlam05.chatapp.models.ConversationMembers;
 import com.thlam05.chatapp.types.IdConversationMembers;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface ConversationMembersRepository extends JpaRepository<ConversationMembers, IdConversationMembers> {
@@ -16,4 +20,8 @@ public interface ConversationMembersRepository extends JpaRepository<Conversatio
                 """)
     Long countTotalConversationsByUser(String userId);
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM conversation_members cm WHERE cm.conversation.id = :conversationId")
+    void deleteByConversationId(@Param("conversationId") String conversationId);
 }
