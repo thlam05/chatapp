@@ -1,7 +1,8 @@
-import { Send, Plus, MoreVertical, UserPlus } from "lucide-react";
+import { Send, Plus, MoreVertical, UserPlus, Trash } from "lucide-react";
 import ChatItem from "../components/ChatItem";
 import Message from "../components/Message";
 import AddMemberModal from "../components/AddMemberModal";
+import ConfirmModal from "../components/ConfirmModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import * as ChatService from "../services/ChatService";
@@ -13,6 +14,7 @@ export default function ChatPage() {
   const [chatActive, setChatActive] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalAddMemberOpen, setIsModalAddMemberOpen] = useState(false);
+  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -54,6 +56,10 @@ export default function ChatPage() {
     } catch (error) {
       console.error("Error adding member:", error);
     }
+  }
+
+  async function handleDeleteChat() {
+    ChatService.deleteChat({ conversationId: chatActive.id, token })
   }
 
   return (
@@ -131,6 +137,12 @@ export default function ChatPage() {
                           <span className="text-gray-800 font-medium">Add Member</span>
                         </li>
                       )}
+
+                      <li className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+                        onClick={() => setIsOpenConfirmModal(true)}>
+                        <Trash className="h-5 w-5 text-gray-500" />
+                        <span className="text-gray-800 font-medium">Delete Chat</span>
+                      </li>
                     </ul>
                   </div>
                 )}
@@ -176,6 +188,16 @@ export default function ChatPage() {
         onClose={() => setIsModalAddMemberOpen(false)}
         onAddMember={handleAddMember}
         token={token}
+      />
+
+      <ConfirmModal
+        open={isOpenConfirmModal}
+        title="Delete Chat"
+        description="This action cannot be undone."
+        confirmText="Delete"
+        danger
+        onConfirm={() => { handleDeleteChat(); setIsOpenConfirmModal(false); }}
+        onCancel={() => setIsOpenConfirmModal(false)}
       />
     </div>
   );

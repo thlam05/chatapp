@@ -75,3 +75,17 @@ export async function addMemberToChat({ conversationId, userId, token }) {
 
   return null;
 }
+
+export async function deleteChat({ conversationId, token }) {
+  const res = await fetch(`${config.BASE_API}/conversations/${conversationId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    }
+  })
+
+  const response = await res.json();
+
+  console.log(response);
+}
