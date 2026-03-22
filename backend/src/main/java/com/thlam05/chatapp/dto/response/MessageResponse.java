@@ -22,5 +22,4 @@ public class MessageResponse {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     boolean seen;
-    // Conversation conversation;
 }

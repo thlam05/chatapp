@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.thlam05.chatapp.dto.request.UserFriendRequest;
+import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.dto.response.UserFriendResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
@@ -92,5 +93,11 @@ public class UserFriendsService {
                         .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND)));
 
         userFriendsRepository.delete(userFriends);
+    }
+
+    public CountResponse countTotalFriendsByUser(String userId) {
+        Long count = userFriendsRepository.countTotalFriendsByUser(userId);
+
+        return new CountResponse(count);
     }
 }

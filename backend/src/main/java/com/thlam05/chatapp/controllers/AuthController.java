@@ -1,6 +1,5 @@
 package com.thlam05.chatapp.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thlam05.chatapp.dto.request.LoginRequest;
@@ -18,12 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
-@RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {
     AuthService authService;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ApiResponse<LoginResponse> handleLogin(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.handleLogin(loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -32,7 +30,7 @@ public class AuthController {
         return apiResponse;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ApiResponse<UserResponse> handleRegister(@RequestBody RegisterRequest registerRequest) {
         UserResponse userResponse = authService.handleRegister(registerRequest.getUsername(),
                 registerRequest.getPassword());
@@ -40,7 +38,7 @@ public class AuthController {
         return apiResponse;
     }
 
-    @GetMapping("/user")
+    @GetMapping("/auth/user")
     public ApiResponse<UserResponse> getAuthenticatedUser() {
         UserResponse userResponse = authService.getAuthenticatedUser();
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>(userResponse);

@@ -6,7 +6,7 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-import com.thlam05.chatapp.dto.request.MessageRequest;
+import com.thlam05.chatapp.dto.request.CreateMessageRequest;
 import com.thlam05.chatapp.dto.response.MessageResponse;
 import com.thlam05.chatapp.models.Message;
 
@@ -17,6 +17,6 @@ public interface MessageMapper {
     List<MessageResponse> toListMessageResponses(List<Message> list);
 
     @BeanMapping(ignoreByDefault = true)
-    void updateMessage(MessageRequest request,
+    void updateMessage(CreateMessageRequest request,
             @MappingTarget Message message);
 }

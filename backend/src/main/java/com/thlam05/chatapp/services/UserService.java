@@ -4,13 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.dto.response.UserResponse;
 import com.thlam05.chatapp.mappers.UserMapper;
 import com.thlam05.chatapp.models.User;
-import com.thlam05.chatapp.repositories.ConversationMembersRepository;
-import com.thlam05.chatapp.repositories.MessageRepository;
-import com.thlam05.chatapp.repositories.UserFriendsRepository;
 import com.thlam05.chatapp.repositories.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -19,9 +15,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UserService {
     UserRepository userRepository;
-    UserFriendsRepository userFriendsRepository;
-    MessageRepository messageRepository;
-    ConversationMembersRepository conversationMembersRepository;
 
     UserMapper userMapper;
 
@@ -33,21 +26,4 @@ public class UserService {
         return listResponses;
     }
 
-    public CountResponse countTotalFriendsByUser(String userId) {
-        Long count = userFriendsRepository.countTotalFriendsByUser(userId);
-
-        return new CountResponse(count);
-    }
-
-    public CountResponse countTotalMessagesByUser(String userId) {
-        Long count = messageRepository.countTotalMessagesByUser(userId);
-
-        return new CountResponse(count);
-    }
-
-    public CountResponse countTotalConversationsByUser(String userId) {
-        Long count = conversationMembersRepository.countTotalConversationsByUser(userId);
-
-        return new CountResponse(count);
-    }
 }

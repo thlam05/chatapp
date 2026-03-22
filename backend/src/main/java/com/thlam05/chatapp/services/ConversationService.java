@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
 import com.thlam05.chatapp.dto.response.ConversationResponse;
+import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.enums.MemberRole;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
@@ -73,5 +74,11 @@ public class ConversationService {
                 .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
 
         conversationRepository.delete(conversation);
+    }
+
+    public CountResponse countTotalConversationsByUser(String userId) {
+        Long count = conversationMembersRepository.countTotalConversationsByUser(userId);
+
+        return new CountResponse(count);
     }
 }
