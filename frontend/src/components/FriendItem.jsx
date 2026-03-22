@@ -1,4 +1,4 @@
-import { UserPlus } from "lucide-react";
+import { MessageCircle, UserPlus } from "lucide-react";
 
 export default function FriendItem({ name, status }) {
   return (
@@ -16,8 +16,8 @@ export default function FriendItem({ name, status }) {
       </div>
 
       <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition">
-        <UserPlus size={16} />
-        Add
+        <MessageCircle size={16} />
+        Chat
       </button>
 
     </div>

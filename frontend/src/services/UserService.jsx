@@ -48,7 +48,7 @@ export async function getTotalChats(userId, token) {
   }
 }
 
-export async function getUsers(token) {
+export async function getUsers({ token }) {
   const res = await fetch(`${config.BASE_API}/users`, {
     method: "GET",
     headers: {
