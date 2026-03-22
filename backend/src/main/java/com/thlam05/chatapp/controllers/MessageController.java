@@ -31,11 +31,12 @@ public class MessageController {
         return new ApiResponse<>(countResponse);
     }
 
-    @PostMapping("/messages")
-    public String createMessage(@RequestBody CreateMessageRequest createMessageRequest) {
-        MessageResponse messageResponse = messageService.createMessage(createMessageRequest, null);
+    @PostMapping("/conversations/{conversationId}/messages")
+    public ApiResponse<MessageResponse> createMessage(@RequestBody CreateMessageRequest createMessageRequest,
+            @PathVariable String conversationId) {
+        MessageResponse messageResponse = messageService.createMessage(createMessageRequest, conversationId);
 
-        return "entity";
+        return new ApiResponse<>(messageResponse);
     }
 
 }

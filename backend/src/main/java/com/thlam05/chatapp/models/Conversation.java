@@ -1,7 +1,7 @@
 package com.thlam05.chatapp.models;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,8 +47,9 @@ public class Conversation {
     LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "conversation")
-    List<Message> messages;
+    @OrderBy("createdAt ASC")
+    Set<Message> messages;
 
     @OneToMany(mappedBy = "conversation")
-    List<ConversationMembers> members;
+    Set<ConversationMembers> members;
 }
