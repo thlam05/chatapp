@@ -23,7 +23,6 @@ export default function AddMemberModal({
 		setLoading(true);
 		try {
 			const userList = await UserService.getFriendsOfUser({ userId: user.id, token });
-			console.log(userList);
 			setUsers(userList);
 		} catch (error) {
 			console.error("Error fetching users:", error);

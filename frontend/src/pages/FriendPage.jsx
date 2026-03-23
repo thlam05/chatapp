@@ -43,6 +43,20 @@ export default function FriendPage() {
       : "hover:bg-gray-100"
     }`;
 
+
+  async function handleAddFriend(_friend) {
+    const userFriend = await FriendService.addFriend({ userId: user.id, friendId: _friend.id, token });
+
+    userFriend.user = userFriend.friend;
+
+    const { friend, ...data } = userFriend;
+
+    setListFriends((prev) => {
+      return [...prev, data]
+    })
+
+    setIsAddFriendModal(false);
+  }
   return (
     <div className="h-full bg-[#f6f7fb] flex justify-center">
 
@@ -126,7 +140,7 @@ export default function FriendPage() {
       <AddFriendModal
         isOpen={isOpenAddFriendModel}
         onClose={() => setIsAddFriendModal(false)}
-        onAddFriend={() => { setIsAddFriendModal(false) }}
+        onAddFriend={(user) => { handleAddFriend(user) }}
         token={token}
       />
     </div>

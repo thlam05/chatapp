@@ -25,7 +25,6 @@ export default function ChatPage() {
     const fetchChats = async () => {
       try {
         const list = await ChatService.getListChatByUser({ userId: user.id, token });
-        console.log(list)
         setListChats(list);
       } catch (err) {
         console.error(err);

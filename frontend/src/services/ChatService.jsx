@@ -86,8 +86,6 @@ export async function deleteChat({ conversationId, token }) {
   })
 
   const response = await res.json();
-
-  console.log(response);
 }
 
 export async function createChat({ name, token }) {
@@ -106,7 +104,6 @@ export async function createChat({ name, token }) {
   const response = await res.json();
 
   if (response.success) {
-    console.log(response);
     return response.data;
   }
 }
