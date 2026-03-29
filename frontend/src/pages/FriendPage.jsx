@@ -1,9 +1,11 @@
 import { UserPlus, Search, MessageCircle, Trash2, Ban, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import FriendItem from "../components/FriendItem";
 import AddFriendModal from "../components/modals/AddFriendModal";
 import * as FriendService from "../services/FriendService";
+import * as ChatService from "../services/ChatService";
 
 const STATUS = {
   ONLINE: "ONLINE",
@@ -25,6 +27,9 @@ const ActionButton = ({ onClick, icon: Icon, label, colorClass }) => (
 export default function FriendPage() {
   const { user, token, isAuthenticated } = useAuth();
 
+
+  const navigate = useNavigate();
+
   const [statusFilter, setStatusFilter] = useState(STATUS.ALL);
   const [allFriends, setAllFriends] = useState([]);
   const [listFriends, setListFriends] = useState([]);
@@ -36,7 +41,6 @@ export default function FriendPage() {
     const fetchFriends = async () => {
       try {
         const friends = await FriendService.getListFriendByUserId({ userId: user.id, token });
-        console.log(friends);
         setAllFriends(friends || []);
         setListFriends(friends || []);
       } catch (error) {
@@ -107,8 +111,10 @@ export default function FriendPage() {
     }
   };
 
-  function handleChat(friend) {
+  async function handleChat(friend) {
+    const chat = await ChatService.accessChat({ friend, token });
 
+    navigate(`/chat/${chat.id}`);
   }
 
   async function handleDeleteFriend(friend) {

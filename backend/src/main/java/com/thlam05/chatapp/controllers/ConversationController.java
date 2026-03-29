@@ -2,6 +2,7 @@ package com.thlam05.chatapp.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.thlam05.chatapp.dto.request.AccessConversationRequest;
 import com.thlam05.chatapp.dto.request.AddConversationMemberRequest;
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
 import com.thlam05.chatapp.dto.response.AddConversationMemberResponse;
@@ -54,6 +55,12 @@ public class ConversationController {
         ConversationResponse conversationResponse = conversationService.createConversation(createConversationRequest);
 
         return new ApiResponse<>(conversationResponse);
+    }
+
+    @PostMapping("/conversations/access")
+    public ApiResponse<ConversationResponse> getOrCreateConversation(@RequestBody AccessConversationRequest request) {
+        ConversationResponse response = conversationService.accessConversation(request);
+        return new ApiResponse<>(response);
     }
 
     @PostMapping("/conversations/{conversationId}/members")

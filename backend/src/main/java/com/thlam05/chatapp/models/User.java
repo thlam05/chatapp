@@ -57,9 +57,4 @@ public class User {
 
     @OneToMany(mappedBy = "friend")
     List<UserFriends> receivedFriends;
-
-    public User orElseThrow(Object object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
-    }
 }

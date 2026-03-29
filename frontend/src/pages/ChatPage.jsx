@@ -23,6 +23,16 @@ export default function ChatPage() {
     const fetchChats = async () => {
       try {
         const list = await ChatService.getListChatByUser({ userId: user.id, token });
+
+
+        list.map(chat => {
+          if (chat.group == false) {
+            const friend = chat.members.find(member => member.user.id != user.id);
+            chat.name = friend.user.username;
+          }
+          return chat;
+        })
+
         setListChats(list || []);
       } catch (err) {
         console.error(err);
@@ -108,7 +118,6 @@ export default function ChatPage() {
 
   const handleChatSelect = (chat) => {
     setChatActive(chat);
-    console.log(chat);
     if (chat.group) {
       navigate(`/chat/group/${chat.id}`);
     } else {

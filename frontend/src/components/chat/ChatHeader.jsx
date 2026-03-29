@@ -11,7 +11,7 @@ export default function ChatHeader({ chat, onAddMember, onDeleteChat }) {
   return (
     <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 bg-white">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold bg-blue-500">
+        <div className="w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold bg-gray-500">
           {chat.name?.charAt(0).toUpperCase()}
         </div>
         <span className="font-medium">{chat.name}</span>

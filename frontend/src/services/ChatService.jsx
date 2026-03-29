@@ -167,3 +167,26 @@ export async function getConversationById({ conversationId, token }) {
   }
   return null;
 }
+
+
+export async function accessChat({ friend, token }) {
+  const res = await fetch(`${config.BASE_API}/conversations/access`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ partnerId: friend.user.id })
+  })
+
+  if (!res.ok) {
+    throw new Error("Request failed");
+  }
+
+  const response = await res.json();
+
+  if (response.success) {
+    return response.data;
+  }
+  return null;
+}

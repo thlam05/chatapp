@@ -4,10 +4,13 @@ import com.thlam05.chatapp.repositories.UserRepository;
 import com.thlam05.chatapp.types.IdConversationMembers;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.thlam05.chatapp.dto.request.AccessConversationRequest;
 import com.thlam05.chatapp.dto.request.AddConversationMemberRequest;
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
 import com.thlam05.chatapp.dto.response.AddConversationMemberResponse;
@@ -51,6 +54,49 @@ public class ConversationService {
     public List<ConversationResponse> getAllConversationsByUser(String userId) {
         List<Conversation> list = conversationRepository.getListConversationsByUser(userId);
         return conversationMapper.toListConversationResponses(list);
+    }
+
+    @Transactional // Rất quan trọng để đảm bảo tính toàn vẹn
+    public ConversationResponse accessConversation(AccessConversationRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String userId = context.getAuthentication().getName();
+
+        Conversation existingConv = conversationRepository
+                .accessConversation(userId, request.getPartnerId());
+
+        if (existingConv != null) {
+            return conversationMapper.toConversationResponse(existingConv);
+        }
+
+        User user = userRepository.getReferenceById(userId);
+        User partner = userRepository.getReferenceById(request.getPartnerId());
+
+        Conversation conversation = Conversation.builder()
+                .name("")
+                .group(false)
+                .build();
+
+        final Conversation savedConversation = conversationRepository.save(conversation);
+
+        ConversationMembers member1 = ConversationMembers.builder()
+                .id(new IdConversationMembers(userId, savedConversation.getId()))
+                .user(user)
+                .conversation(savedConversation)
+                .role(MemberRole.MEMBER.name())
+                .build();
+
+        ConversationMembers member2 = ConversationMembers.builder()
+                .id(new IdConversationMembers(request.getPartnerId(), savedConversation.getId()))
+                .user(partner)
+                .conversation(savedConversation)
+                .role(MemberRole.MEMBER.name())
+                .build();
+
+        conversationMembersRepository.saveAll(List.of(member1, member2));
+
+        savedConversation.setMembers(Set.of(member1, member2));
+
+        return conversationMapper.toConversationResponse(savedConversation);
     }
 
     public ConversationResponse createConversation(CreateConversationRequest createConversationRequest) {
