@@ -81,11 +81,12 @@ public class UserFriendsService {
 
     public CreateUserFriendResponse updateUserFriends(String userId, String friendId,
             UserFriendRequest userFriendRequest) {
-        UserFriends userFriends = userFriendsRepository
-                .findById(new IdUserFriends(userId, friendId))
-                .orElseGet(() -> userFriendsRepository
-                        .findById(new IdUserFriends(friendId, userId))
-                        .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND)));
+        IdUserFriends id1 = new IdUserFriends(userId, friendId);
+        IdUserFriends id2 = new IdUserFriends(friendId, userId);
+
+        UserFriends userFriends = userFriendsRepository.findById(id1)
+                .or(() -> userFriendsRepository.findById(id2))
+                .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
 
         userFriends.setStatus(userFriendRequest.getStatus());
 
@@ -95,11 +96,12 @@ public class UserFriendsService {
     }
 
     public void deleteUserFriends(String userId, String friendId) {
-        UserFriends userFriends = userFriendsRepository
-                .findById(new IdUserFriends(userId, friendId))
-                .orElseGet(() -> userFriendsRepository
-                        .findById(new IdUserFriends(friendId, userId))
-                        .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND)));
+        IdUserFriends id1 = new IdUserFriends(userId, friendId);
+        IdUserFriends id2 = new IdUserFriends(friendId, userId);
+
+        UserFriends userFriends = userFriendsRepository.findById(id1)
+                .or(() -> userFriendsRepository.findById(id2))
+                .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
 
         userFriendsRepository.delete(userFriends);
     }

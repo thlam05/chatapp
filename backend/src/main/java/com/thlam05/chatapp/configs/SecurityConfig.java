@@ -28,14 +28,17 @@ public class SecurityConfig {
     private String[] PUBLIC_ENDPOINT = { "/auth/login", "/auth/register" };
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
-        httpSecurity.authorizeHttpRequests(
-                request -> request.requestMatchers(PUBLIC_ENDPOINT).permitAll().anyRequest().authenticated());
-
-        httpSecurity.oauth2ResourceServer(
-                oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+
+        httpSecurity.authorizeHttpRequests(request -> request
+                .requestMatchers(PUBLIC_ENDPOINT).permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated());
+
+        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
 
         return httpSecurity.build();
     }
@@ -45,13 +48,13 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
         return source;
     }
 
