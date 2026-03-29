@@ -6,6 +6,9 @@ import ChatPage from "../pages/ChatPage";
 import FriendPage from "../pages/FriendPage";
 import SettingPage from "../pages/SettingPage";
 import RegisterPage from "../pages/RegisterPage";
+import { path } from "framer-motion/client";
+import ChatWindow from "../components/chat/ChatWindow";
+import ChatGroupWindow from "../components/chat/ChatGroupWindow";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +20,21 @@ const router = createBrowserRouter([
       },
       {
         path: "/chat",
-        element: <ChatPage />
+        element: <ChatPage />,
+        children: [
+          {
+            index: true,
+            element: <div className="flex-1 flex items-center justify-center">Chọn một cuộc trò chuyện</div>
+          },
+          {
+            path: "group/:id",
+            element: <ChatGroupWindow />
+          },
+          {
+            path: ":id",
+            element: <ChatWindow />
+          }
+        ]
       },
       {
         path: "/friends",

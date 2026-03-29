@@ -1,31 +1,29 @@
-import { Send, Plus, MoreVertical, UserPlus, Trash } from "lucide-react";
+import { Plus } from "lucide-react";
 import ChatItem from "../components/ChatItem";
-import Message from "../components/Message";
 import AddMemberModal from "../components/modals/AddMemberModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import AddChatModal from "../components/modals/AddChatModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import * as ChatService from "../services/ChatService";
-import { pre } from "framer-motion/client";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 
 export default function ChatPage() {
   const { user, isAuthenticated, token } = useAuth();
+  const navigate = useNavigate();
+  const { id: routeChatId } = useParams();
 
   const [listChats, setListChats] = useState([]);
   const [chatActive, setChatActive] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isModalAddMemberOpen, setIsModalAddMemberOpen] = useState(false);
-  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [isOpenCreateChatModal, setIsOpenCreateChatModal] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !user?.id) return;
 
     const fetchChats = async () => {
       try {
         const list = await ChatService.getListChatByUser({ userId: user.id, token });
-        setListChats(list);
+        setListChats(list || []);
       } catch (err) {
         console.error(err);
       }
@@ -34,199 +32,134 @@ export default function ChatPage() {
     fetchChats();
   }, [user, isAuthenticated, token]);
 
+  useEffect(() => {
+    if (!routeChatId || !listChats.length) return;
 
-  async function handleSubmitSendMessage(e) {
-    e.preventDefault();
+    const selected = listChats.find((chat) => String(chat.id) === String(routeChatId));
+    if (selected) {
+      setChatActive(selected);
+      return;
+    }
 
-    const form = new FormData(e.target);
+    const loadConversation = async () => {
+      try {
+        const conversation = await ChatService.getConversationById({ conversationId: routeChatId, token });
+        if (conversation) {
+          setChatActive(conversation);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-    const content = form.get("content");
+    loadConversation();
+  }, [routeChatId, listChats, token]);
+
+  const handleSendMessage = async (content) => {
+    if (!chatActive) return;
 
     const message = await ChatService.sendMessage({ content, conversationId: chatActive.id, userId: user.id, token });
 
-    setChatActive(prev => ({
-      ...prev,
-      messages: [...prev.messages || [], message]
-    }));
-  }
+    setChatActive((prev) => ({ ...prev, messages: [...(prev?.messages || []), message] }));
+    setListChats((prev) =>
+      prev.map((item) =>
+        item.id === chatActive.id
+          ? { ...item, latestMessage: message, messages: [...(item.messages || []), message] }
+          : item
+      )
+    );
+  };
 
-  async function handleAddMember(user) {
+  async function handleAddMember(member) {
+    if (!chatActive) return;
+
     try {
-      await ChatService.addMemberToChat({ conversationId: chatActive.id, userId: user.id, token });
+      await ChatService.addMemberToChat({ conversationId: chatActive.id, userId: member.id, token });
       setIsModalAddMemberOpen(false);
-      // Optionally, refresh the chat or show a success message
     } catch (error) {
       console.error("Error adding member:", error);
     }
   }
 
   async function handleDeleteChat() {
-    ChatService.deleteChat({ conversationId: chatActive.id, token })
+    if (!chatActive) return;
 
-    setListChats(prev => {
-      return prev.filter(chat => {
-        chat.id !== chatActive.id
-      })
-    })
+    await ChatService.deleteChat({ conversationId: chatActive.id, token });
+
+    setListChats((prev) => prev.filter((chat) => chat.id !== chatActive.id));
     setChatActive(null);
+    navigate("/chat");
   }
-
 
   async function handleCreateChat({ name }) {
     const chat = await ChatService.createChat({ name, token });
 
+    if (!chat) return;
+
     setChatActive(chat);
-    setListChats(prev => ([
-      ...prev, chat
-    ]));
+    setListChats((prev) => [...prev, chat]);
+
+    if (chat.group) {
+      navigate(`/chat/group/${chat.id}`);
+    } else {
+      navigate(`/chat/${chat.id}`);
+    }
   }
+
+  const handleChatSelect = (chat) => {
+    setChatActive(chat);
+    console.log(chat);
+    if (chat.group) {
+      navigate(`/chat/group/${chat.id}`);
+    } else {
+      navigate(`/chat/${chat.id}`);
+    }
+  };
 
   return (
     <div className="h-full bg-[#f6f7fb] flex justify-center">
-
-      {/* Conversation List */}
-      <div className="w-80 bg-white bg-white border border-gray-200 flex flex-col">
-
+      <div className="w-80 bg-white border border-gray-200 flex flex-col">
         <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 bg-white">
-
-          <h2 className="font-semibold text-gray-800">
-            Conversations
-          </h2>
-
+          <h2 className="font-semibold text-gray-800">Conversations</h2>
           <button
             className="flex items-center gap-1 px-3 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition"
-            onClick={() => setIsOpenCreateChatModal(true)} >
+            onClick={() => setIsOpenCreateChatModal(true)}
+          >
             <Plus size={16} className="text-white" />
             Create
           </button>
-
         </div>
 
         <div className="flex-1 overflow-auto p-3 space-y-2">
-          {listChats && listChats.map(chat => {
-            return (
-              <ChatItem
-                key={chat.id}
-                name={chat.name}
-                message={chat.latestMessage}
-                active={chatActive?.id == chat.id}
-                onClick={() => { setChatActive(chat) }}
-              />
-            )
-          })}
-
-        </div>
-
-      </div>
-
-
-      {/* Chat Window */}
-      <div className="flex-1 flex flex-col bg-white border-r border-t border-b  border-gray-200">
-
-        {/* Chat header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 bg-white">
-
-
-
-          {chatActive && (
-            <>
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold bg-gray-500`}>
-                  {chatActive.name?.charAt(0).toUpperCase()}
-                </div>
-
-                <span className="font-medium">
-                  {chatActive.name}
-                </span>
-              </div>
-
-              <div className="relative inline-block text-left">
-                <button
-                  className="p-2 rounded-lg hover:bg-gray-100"
-                  onClick={() => setIsMenuOpen(prev => !prev)}
-                >
-                  <MoreVertical size={18} />
-                </button>
-
-                {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200">
-                    <ul className="py-2 text-sm text-gray-700">
-                      {chatActive.group && (
-                        <li className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors duration-200"
-                          onClick={() => setIsModalAddMemberOpen(true)}>
-                          <UserPlus className="h-5 w-5 text-gray-500" />
-                          <span className="text-gray-800 font-medium">Add Member</span>
-                        </li>
-                      )}
-
-                      <li className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors duration-200"
-                        onClick={() => setIsOpenConfirmModal(true)}>
-                        <Trash className="h-5 w-5 text-gray-500" />
-                        <span className="text-gray-800 font-medium">Delete Chat</span>
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-
-        <div className="flex-1 p-6 overflow-auto space-y-4">
-          {chatActive && chatActive.messages && chatActive.messages.map((message) => {
-            return (
-              (message.user.id === user.id)
-                ? <Message key={message.id} text={message.content} mine />
-                : <Message key={message.id} text={message.content} />
-            );
-          })}
-
-        </div>
-
-        <div className="p-4 border-t border-gray-200 bg-white">
-
-          <form
-            className="flex items-center border border-gray-200 rounded-lg px-3 py-2"
-            onSubmit={handleSubmitSendMessage}>
-
-            <input
-              type="text"
-              name="content"
-              placeholder="Type a message..."
-              className="flex-1 outline-none text-sm"
+          {listChats.map((chat) => (
+            <ChatItem
+              key={chat.id}
+              name={chat.name}
+              message={chat.latestMessage}
+              active={chatActive?.id === chat.id}
+              onClick={() => handleChatSelect(chat)}
             />
-
-            <button className="p-2 rounded-lg hover:bg-gray-100">
-              <Send size={18} />
-            </button>
-
-          </form>
+          ))}
         </div>
       </div>
 
-      <AddMemberModal
-        isOpen={isModalAddMemberOpen}
-        onClose={() => setIsModalAddMemberOpen(false)}
-        onAddMember={handleAddMember}
-        token={token}
-      />
+      <div className="flex-1 flex flex-col bg-white border-r border-t border-b border-gray-200">
 
-      <ConfirmModal
-        open={isOpenConfirmModal}
-        title="Delete Chat"
-        description="This action cannot be undone."
-        confirmText="Delete"
-        danger
-        onConfirm={() => { handleDeleteChat(); setIsOpenConfirmModal(false); }}
-        onCancel={() => setIsOpenConfirmModal(false)}
-      />
+        <Outlet
+          context={{
+            chat: chatActive,
+            user,
+            onSendMessage: handleSendMessage,
+            onAddMember: handleAddMember,
+            onDeleteChat: handleDeleteChat,
+          }}
+        />
+      </div>
 
       <AddChatModal
         open={isOpenCreateChatModal}
         onClose={() => setIsOpenCreateChatModal(false)}
-        onCreate={(data) => {
-          handleCreateChat(data);
-        }}
+        onCreate={handleCreateChat}
       />
     </div>
   );

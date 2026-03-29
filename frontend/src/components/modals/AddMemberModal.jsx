@@ -6,10 +6,9 @@ import { useAuth } from "../../contexts/AuthContext";
 export default function AddMemberModal({
 	isOpen,
 	onClose,
-	onAddMember,
-	token
+	onAddMember
 }) {
-	const { user } = useAuth();
+	const { user, token } = useAuth();
 	const [users, setUsers] = useState([]);
 	const [loading, setLoading] = useState(false);
 
