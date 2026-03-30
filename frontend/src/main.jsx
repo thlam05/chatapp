@@ -4,9 +4,12 @@ import './index.css';
 import router from './routes/Router';
 import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotifycationContext';
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
-    <RouterProvider router={router} />,
+    <NotificationProvider>
+      <RouterProvider router={router} />,
+    </NotificationProvider>
   </AuthProvider>
 );

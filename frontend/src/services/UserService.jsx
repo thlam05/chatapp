@@ -97,3 +97,19 @@ export async function getNotFriendsOfUser({ userId, token }) {
 }
 
 
+export async function updateProfile({ updateData, token }) {
+  const res = await fetch(`${config.BASE_API}/users/${updateData.userId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ username: updateData.username, newPassword: updateData.newPassword, currentPassword: updateData.currentPassword })
+  });
+
+  const response = await res.json();
+
+  if (response.success) {
+    return response.data;
+  }
+}
