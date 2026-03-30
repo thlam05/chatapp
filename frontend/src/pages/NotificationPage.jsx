@@ -22,7 +22,9 @@ export default function NotificationPage() {
     fetchNotification();
   }, [user, token, isAuthenticated]);
 
-  const handleMarkAsRead = (id) => {
+  const handleMarkAsRead = async (id) => {
+    const body = { read: true };
+    await NotificationService.updateNotification({ body, notificationId: id, token });
     setNotifications(prev =>
       prev.map(notif => notif.id === id ? { ...notif, read: true } : notif)
     );

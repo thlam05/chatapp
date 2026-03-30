@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,4 +42,10 @@ public class NotificationController {
         return new ApiResponse<>(response);
     }
 
+    @PatchMapping("/notifications/{notificationId}")
+    public ApiResponse<NotificationResponse> updateNotifications(@PathVariable String notificationId,
+            @RequestBody NotificationRequest request) {
+        var response = notificationService.updateNotification(notificationId, request);
+        return new ApiResponse<>(response);
+    }
 }
