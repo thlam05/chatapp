@@ -4,7 +4,7 @@ import './index.css';
 import router from './routes/Router';
 import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from './contexts/AuthContext';
-import { NotificationProvider } from './contexts/NotifycationContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>

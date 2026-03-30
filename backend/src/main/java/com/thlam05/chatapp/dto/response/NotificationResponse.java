@@ -20,6 +20,7 @@ public class NotificationResponse {
     String id;
     String title;
     String content;
+    String type;
     boolean read;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

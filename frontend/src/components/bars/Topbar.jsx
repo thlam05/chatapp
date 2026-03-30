@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
 
 export default function Topbar() {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
@@ -12,13 +12,9 @@ export default function Topbar() {
 
       <div className="flex items-center gap-4">
 
-        <button className="p-2 rounded-lg hover:bg-gray-100">
-          <Bell size={20} />
-        </button>
-
         {isAuthenticated ? (
           <div className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center font-semibold text-sm cursor-pointer">
-            L
+            {user.username.charAt(0).toUpperCase()}
           </div>
         ) : (
           <div className="flex items-center gap-3">

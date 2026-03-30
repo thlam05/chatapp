@@ -30,12 +30,20 @@ public class NotificationService {
         return notificationMapper.toListNotificationResponses(list);
     }
 
+    public List<NotificationResponse> getNotificationsByUser(String userId) {
+
+        List<Notification> list = notificationRepository.getNotificationsByUser(userId);
+
+        return notificationMapper.toListNotificationResponses(list);
+    }
+
     public NotificationResponse createNotification(String userId, NotificationRequest notificationRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
         Notification notification = new Notification();
         notification.setTitle(notificationRequest.getTitle());
         notification.setContent(notificationRequest.getContent());
         notification.setRead(false);
+        notification.setType(notificationRequest.getType());
         notification.setUser(user);
 
         notification = notificationRepository.save(notification);

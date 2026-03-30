@@ -9,6 +9,7 @@ import RegisterPage from "../pages/RegisterPage";
 import { path } from "framer-motion/client";
 import ChatWindow from "../components/chat/ChatWindow";
 import ChatGroupWindow from "../components/chat/ChatGroupWindow";
+import NotificationPage from "../pages/NotificationPage";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <SettingPage />
+      },
+      {
+        path: "/notifications",
+        element: <NotificationPage />
       }
     ]
   },

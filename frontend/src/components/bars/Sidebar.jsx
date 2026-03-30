@@ -1,4 +1,4 @@
-import { Home, MessageCircle, Users, Settings, LogOut } from "lucide-react";
+import { Home, MessageCircle, Users, Settings, LogOut, Bell } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router";
@@ -24,6 +24,8 @@ export default function Sidebar() {
         <SidebarItem icon={<MessageCircle size={18} />} text="Chat" to="/chat" />
 
         <SidebarItem icon={<Users size={18} />} text="Friends" to="/friends" />
+
+        <SidebarItem icon={<Bell size={18} />} text="Notifications" to="/notifications" />
 
         <SidebarItem icon={<Settings size={18} />} text="Settings" to="/settings" />
 

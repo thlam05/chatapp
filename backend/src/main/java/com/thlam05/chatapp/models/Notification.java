@@ -35,6 +35,8 @@ public class Notification {
     @Column(name = "is_read")
     boolean read;
 
+    String type;
+
     @Column(name = "created_at")
     @CreationTimestamp
     LocalDateTime createdAt;

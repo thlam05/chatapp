@@ -1,7 +1,7 @@
 import { User, Lock, Loader2 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { useNotification } from "../contexts/NotifycationContext";
+import { useNotification } from "../contexts/NotificationContext";
 import * as UserService from "../services/UserService"; // Giả định bạn có service này
 
 export default function SettingPage() {
@@ -65,7 +65,7 @@ export default function SettingPage() {
         username: updatedUser.username,
       });
 
-      notify("success", "Profile updated successfully!");
+      notify("success", "Cập nhật thành công", "Mật khẩu của bạn đã được thay đổi.");
 
       setPassword("");
       setNewPassword("");
