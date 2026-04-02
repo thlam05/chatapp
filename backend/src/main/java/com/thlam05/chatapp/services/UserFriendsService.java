@@ -38,20 +38,20 @@ public class UserFriendsService {
     public List<UserFriendResponse> getListFriendsOfUser(String userId) {
         List<UserFriends> list = userFriendsRepository.findFriends(userId);
 
-        List<UserFriendResponse> listResponses = list.stream().map(uf -> {
-            User friend = uf.getUser().getId().equals(userId)
-                    ? uf.getFriend()
-                    : uf.getFriend();
+        // List<UserFriendResponse> listResponses = list.stream().map(uf -> {
+        // User friend = uf.getUser().getId().equals(userId)
+        // ? uf.getFriend()
+        // : uf.getFriend();
 
-            return UserFriendResponse.builder()
-                    .user(userMapper.toUserResponse(friend))
-                    .status(uf.getStatus())
-                    .createdAt(uf.getCreatedAt())
-                    .updatedAt(uf.getUpdatedAt())
-                    .build();
-        }).toList();
+        // return UserFriendResponse.builder()
+        // .user(userMapper.toUserResponse(friend))
+        // .status(uf.getStatus())
+        // .createdAt(uf.getCreatedAt())
+        // .updatedAt(uf.getUpdatedAt())
+        // .build();
+        // }).toList();
 
-        return listResponses;
+        return userFriendMapper.toListUserFriendResponses(list);
     }
 
     public List<UserResponse> getListNotFriendsOfUser(String userId) {

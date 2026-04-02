@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserFriendResponse {
     UserResponse user;
+    UserResponse friend;
     String status;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

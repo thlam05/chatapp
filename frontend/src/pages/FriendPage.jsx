@@ -31,7 +31,7 @@ export default function FriendPage() {
   const navigate = useNavigate();
 
   const [statusFilter, setStatusFilter] = useState(STATUS.ALL);
-  const [allFriends, setAllFriends] = useState([]);
+  const [listRelationships, setListRelationships] = useState([]);
   const [listFriends, setListFriends] = useState([]);
   const [isOpenAddFriendModal, setIsAddFriendModal] = useState(false);
 
@@ -40,9 +40,18 @@ export default function FriendPage() {
 
     const fetchFriends = async () => {
       try {
-        const friends = await FriendService.getListFriendByUserId({ userId: user.id, token });
-        setAllFriends(friends || []);
-        setListFriends(friends || []);
+        const relationships = await FriendService.getListFriendByUserId({ userId: user.id, token });
+        console.log(relationships);
+        setListRelationships(relationships || []);
+        const friends = relationships.map(relationship => {
+          return {
+            user: user.id == relationship.user.id ? relationship.friend : relationship.user,
+            status: relationship.status,
+            createdAt: relationship.createdAt,
+            updatedAt: relationship.updatedAt
+          }
+        })
+        setListFriends(friends || [])
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
@@ -52,12 +61,31 @@ export default function FriendPage() {
   }, [user, token, isAuthenticated]);
 
   useEffect(() => {
+    const allFriends = listRelationships.map(relationship => {
+      return {
+        user: user.id == relationship.user.id ? relationship.friend : relationship.user,
+        status: relationship.status,
+        createdAt: relationship.createdAt,
+        updatedAt: relationship.updatedAt
+      }
+    })
     if (statusFilter === STATUS.ALL) {
       setListFriends(allFriends);
+    } else if (statusFilter === STATUS.PENDING) {
+      setListFriends(listRelationships.filter(relationship => {
+        return relationship.status == statusFilter && relationship.friend.id === user.id
+      }).map(relationship => {
+        return {
+          user: relationship.user,
+          status: relationship.status,
+          createdAt: relationship.createdAt,
+          updatedAt: relationship.updatedAt
+        }
+      }))
     } else {
       setListFriends(allFriends.filter(friend => friend.status === statusFilter));
     }
-  }, [statusFilter, allFriends]);
+  }, [statusFilter, listRelationships]);
 
   async function handleAddFriend(friend) {
     try {
@@ -67,12 +95,7 @@ export default function FriendPage() {
         token
       });
 
-      const normalizedFriend = {
-        ...addedFriend,
-        user: addedFriend.friend || friend
-      };
-
-      setAllFriends(prev => [...prev, normalizedFriend]);
+      setListRelationships(prev => [...prev, addedFriend]);
       setIsAddFriendModal(false);
 
     } catch (error) {
@@ -120,7 +143,9 @@ export default function FriendPage() {
   async function handleDeleteFriend(friend) {
     try {
       await FriendService.deleteFriend({ userId: user.id, friendId: friend.user.id, token });
-      setAllFriends(prev => prev.filter(uf => uf.user.id != friend.user.id));
+      setListRelationships(prev => prev.filter(uf => {
+        return (uf.user.id !== user.id || uf.friend.id !== friend.user.id) && (uf.friend.id !== user.id || uf.user.id !== friend.user.id);
+      }));
     } catch (error) {
       console.log(error);
     }
@@ -130,7 +155,7 @@ export default function FriendPage() {
     try {
       await FriendService.updateFriend({ userId: user.id, friendId: friend.user.id, status: "ACCEPTED", token });
 
-      setAllFriends(prev => prev.map(item => {
+      setListRelationships(prev => prev.map(item => {
         if (item.user.id === friend.user.id) {
           item.status = "ACCEPTED"
         }
@@ -146,8 +171,9 @@ export default function FriendPage() {
     try {
       await FriendService.updateFriend({ userId: user.id, friendId: friend.user.id, status: "BLOCKED", token });
 
-      setAllFriends(prev => prev.map(item => {
-        if (item.user.id === friend.user.id) {
+      setListRelationships(prev => prev.map(item => {
+        if ((item.user.id === user.id && item.friend.id === friend.user.id)
+          || (item.friend.id === user.id && item.user.id === friend.user.id)) {
           item.status = "BLOCKED"
         }
         return item;
@@ -162,8 +188,9 @@ export default function FriendPage() {
     try {
       await FriendService.updateFriend({ userId: user.id, friendId: friend.user.id, status: "ACCEPTED", token });
 
-      setAllFriends(prev => prev.map(item => {
-        if (item.user.id === friend.user.id) {
+      setListRelationships(prev => prev.map(item => {
+        if ((item.user.id === user.id && item.friend.id === friend.user.id)
+          || (item.friend.id === user.id && item.user.id === friend.user.id)) {
           item.status = "ACCEPTED"
         }
         return item;
