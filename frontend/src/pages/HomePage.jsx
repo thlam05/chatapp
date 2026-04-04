@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import * as userService from "../services/UserService";
+import * as UserApi from "../api/UserApi";
 
 export default function HomePage() {
   const { user, isAuthenticated, token } = useAuth();
@@ -14,9 +14,9 @@ export default function HomePage() {
 
     const fetchData = async () => {
       const [messages, friends, chats] = await Promise.all([
-        userService.getTotalMessages(user.id, token),
-        userService.getTotalFriends(user.id, token),
-        userService.getTotalChats(user.id, token),
+        UserApi.getTotalMessages(user.id, token),
+        UserApi.getTotalFriends(user.id, token),
+        UserApi.getTotalChats(user.id, token),
       ]);
 
       setTotalMessages(messages);

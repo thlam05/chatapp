@@ -6,7 +6,6 @@ import ChatPage from "../pages/ChatPage";
 import FriendPage from "../pages/FriendPage";
 import SettingPage from "../pages/SettingPage";
 import RegisterPage from "../pages/RegisterPage";
-import { path } from "framer-motion/client";
 import ChatWindow from "../components/chat/ChatWindow";
 import ChatGroupWindow from "../components/chat/ChatGroupWindow";
 import NotificationPage from "../pages/NotificationPage";

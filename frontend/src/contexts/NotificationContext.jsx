@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { CheckCircle, AlertCircle, Info, X } from "lucide-react";
 import { useAuth } from "./AuthContext"; // Import useAuth để lấy user và token
-import * as NotificationService from "../services/NotificationService"; // Import file service của bạn
+import * as NotificationApi from "../api/NotificationApi"; // Import file service của bạn
 
 const NotificationContext = createContext();
 
@@ -31,7 +31,7 @@ export function NotificationProvider({ children }) {
           read: false
         };
 
-        await NotificationService.createNotification({ body, userId: user.id, token });
+        await NotificationApi.createNotification({ body, userId: user.id, token });
       } catch (error) {
         console.error("Lỗi khi lưu thông báo xuống DB:", error);
       }

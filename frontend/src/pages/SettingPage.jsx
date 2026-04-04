@@ -2,7 +2,7 @@ import { User, Lock, Loader2 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useNotification } from "../contexts/NotificationContext";
-import * as UserService from "../services/UserService"; // Giả định bạn có service này
+import * as UserApi from "../api/UserApi"; // Giả định bạn có service này
 
 export default function SettingPage() {
   const { user, token, setUser } = useAuth();
@@ -58,7 +58,7 @@ export default function SettingPage() {
         ...(newPassword && { currentPassword: password, newPassword })
       };
 
-      const updatedUser = await UserService.updateProfile({ updateData, token });
+      const updatedUser = await UserApi.updateProfile({ updateData, token });
 
       setUser({
         ...user,

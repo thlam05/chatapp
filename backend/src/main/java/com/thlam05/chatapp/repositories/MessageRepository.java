@@ -23,7 +23,7 @@ public interface MessageRepository extends JpaRepository<Message, String> {
             """)
     Long countTotalMessagesByUser(String userId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
     @Query("DELETE FROM messages m WHERE m.conversation.id = :conversationId")
     void deleteByConversationId(@Param("conversationId") String conversationId);

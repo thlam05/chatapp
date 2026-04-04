@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { UserPlus, X } from "lucide-react";
-import * as UserService from "../../services/UserService";
+import * as UserApi from "../../api/UserApi";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function AddFriendModal({
@@ -22,7 +22,7 @@ export default function AddFriendModal({
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const userList = await UserService.getNotFriendsOfUser({ userId: user.id, token });
+            const userList = await UserApi.getNotFriendsOfUser({ userId: user.id, token });
             setUsers(userList);
         } catch (error) {
             console.error("Error fetching users:", error);

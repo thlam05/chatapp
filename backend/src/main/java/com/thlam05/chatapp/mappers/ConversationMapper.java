@@ -9,6 +9,7 @@ import com.thlam05.chatapp.models.Conversation;
 
 @Mapper(componentModel = "spring")
 public interface ConversationMapper {
+
     ConversationResponse toConversationResponse(Conversation conversation);
 
     List<ConversationResponse> toListConversationResponses(List<Conversation> list);

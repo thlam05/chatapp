@@ -25,7 +25,7 @@ public class SecurityConfig {
     @Value("${jwt.secret-key}")
     private String secret;
 
-    private String[] PUBLIC_ENDPOINT = { "/auth/login", "/auth/register" };
+    private String[] PUBLIC_ENDPOINT = { "/auth/login", "/auth/register", "/ws/**" };
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

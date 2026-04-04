@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.thlam05.chatapp.dto.request.AccessConversationRequest;
 import com.thlam05.chatapp.dto.request.AddConversationMemberRequest;
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
-import com.thlam05.chatapp.dto.response.AddConversationMemberResponse;
 import com.thlam05.chatapp.dto.response.ApiResponse;
+import com.thlam05.chatapp.dto.response.ConversationMemberResponse;
 import com.thlam05.chatapp.dto.response.ConversationResponse;
+import com.thlam05.chatapp.dto.response.ConversationSidebarResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.services.ConversationService;
@@ -34,9 +35,15 @@ public class ConversationController {
         return new ApiResponse<>(listConversations);
     }
 
+    @GetMapping("/conversations/{conversationId}")
+    public ApiResponse<ConversationResponse> getMethodName(@PathVariable String conversationId) {
+        var response = conversationService.getById(conversationId);
+        return new ApiResponse<>(response);
+    }
+
     @GetMapping("/users/{userId}/conversations")
-    public ApiResponse<List<ConversationResponse>> getListConversationsByUser(@PathVariable String userId) {
-        List<ConversationResponse> list = conversationService.getAllConversationsByUser(userId);
+    public ApiResponse<List<ConversationSidebarResponse>> getListConversationsByUser(@PathVariable String userId) {
+        List<ConversationSidebarResponse> list = conversationService.getAllConversationsByUser(userId);
 
         return new ApiResponse<>(list);
     }
@@ -64,9 +71,9 @@ public class ConversationController {
     }
 
     @PostMapping("/conversations/{conversationId}/members")
-    public ApiResponse<AddConversationMemberResponse> postMethodName(@RequestBody AddConversationMemberRequest request,
+    public ApiResponse<ConversationMemberResponse> postMethodName(@RequestBody AddConversationMemberRequest request,
             @PathVariable String conversationId) {
-        AddConversationMemberResponse response = conversationService.addConversationMember(request, conversationId);
+        ConversationMemberResponse response = conversationService.addConversationMember(request, conversationId);
         return new ApiResponse<>(response);
     }
 

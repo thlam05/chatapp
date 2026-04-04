@@ -4,8 +4,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import FriendItem from "../components/FriendItem";
 import AddFriendModal from "../components/modals/AddFriendModal";
-import * as FriendService from "../services/FriendService";
-import * as ChatService from "../services/ChatService";
+import * as FriendApi from "../api/FriendApi";
+import * as ChatApi from "../api/ChatApi";
 
 const STATUS = {
   ONLINE: "ONLINE",
@@ -40,7 +40,7 @@ export default function FriendPage() {
 
     const fetchFriends = async () => {
       try {
-        const relationships = await FriendService.getListFriendByUserId({ userId: user.id, token });
+        const relationships = await FriendApi.getListFriendByUserId({ userId: user.id, token });
         console.log(relationships);
         setListRelationships(relationships || []);
         const friends = relationships.map(relationship => {
@@ -89,7 +89,7 @@ export default function FriendPage() {
 
   async function handleAddFriend(friend) {
     try {
-      const addedFriend = await FriendService.addFriend({
+      const addedFriend = await FriendApi.addFriend({
         userId: user.id,
         friendId: friend.id,
         token
@@ -135,14 +135,14 @@ export default function FriendPage() {
   };
 
   async function handleChat(friend) {
-    const chat = await ChatService.accessChat({ friend, token });
+    const chat = await ChatApi.accessChat({ friend, token });
 
     navigate(`/chat/${chat.id}`);
   }
 
   async function handleDeleteFriend(friend) {
     try {
-      await FriendService.deleteFriend({ userId: user.id, friendId: friend.user.id, token });
+      await FriendApi.deleteFriend({ userId: user.id, friendId: friend.user.id, token });
       setListRelationships(prev => prev.filter(uf => {
         return (uf.user.id !== user.id || uf.friend.id !== friend.user.id) && (uf.friend.id !== user.id || uf.user.id !== friend.user.id);
       }));
@@ -153,7 +153,7 @@ export default function FriendPage() {
 
   async function handleAcceptFriend(friend) {
     try {
-      await FriendService.updateFriend({ userId: user.id, friendId: friend.user.id, status: "ACCEPTED", token });
+      await FriendApi.updateFriend({ userId: user.id, friendId: friend.user.id, status: "ACCEPTED", token });
 
       setListRelationships(prev => prev.map(item => {
         if (item.user.id === friend.user.id) {
@@ -169,7 +169,7 @@ export default function FriendPage() {
 
   async function handleBlockFriend(friend) {
     try {
-      await FriendService.updateFriend({ userId: user.id, friendId: friend.user.id, status: "BLOCKED", token });
+      await FriendApi.updateFriend({ userId: user.id, friendId: friend.user.id, status: "BLOCKED", token });
 
       setListRelationships(prev => prev.map(item => {
         if ((item.user.id === user.id && item.friend.id === friend.user.id)
@@ -186,7 +186,7 @@ export default function FriendPage() {
 
   async function handleUnblockFriend(friend) {
     try {
-      await FriendService.updateFriend({ userId: user.id, friendId: friend.user.id, status: "ACCEPTED", token });
+      await FriendApi.updateFriend({ userId: user.id, friendId: friend.user.id, status: "ACCEPTED", token });
 
       setListRelationships(prev => prev.map(item => {
         if ((item.user.id === user.id && item.friend.id === friend.user.id)

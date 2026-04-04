@@ -3,6 +3,7 @@ package com.thlam05.chatapp.services;
 import com.thlam05.chatapp.repositories.UserRepository;
 import com.thlam05.chatapp.types.IdConversationMembers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,14 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thlam05.chatapp.dto.request.AccessConversationRequest;
 import com.thlam05.chatapp.dto.request.AddConversationMemberRequest;
 import com.thlam05.chatapp.dto.request.CreateConversationRequest;
-import com.thlam05.chatapp.dto.response.AddConversationMemberResponse;
+import com.thlam05.chatapp.dto.response.ConversationMemberResponse;
 import com.thlam05.chatapp.dto.response.ConversationResponse;
+import com.thlam05.chatapp.dto.response.ConversationSidebarResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.enums.MemberRole;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.exceptions.AppException;
 import com.thlam05.chatapp.mappers.ConversationMapper;
 import com.thlam05.chatapp.mappers.ConversationMemberMapper;
+import com.thlam05.chatapp.mappers.MessageMapper;
 import com.thlam05.chatapp.models.Conversation;
 import com.thlam05.chatapp.models.ConversationMembers;
 import com.thlam05.chatapp.models.User;
@@ -41,6 +44,8 @@ public class ConversationService {
 
     MessageRepository messageRepository;
 
+    MessageMapper messageMapper;
+
     ConversationMapper conversationMapper;
 
     ConversationMemberMapper conversationMemberMapper;
@@ -51,9 +56,29 @@ public class ConversationService {
         return listResponses;
     }
 
-    public List<ConversationResponse> getAllConversationsByUser(String userId) {
+    public List<ConversationSidebarResponse> getAllConversationsByUser(String userId) {
         List<Conversation> list = conversationRepository.getListConversationsByUser(userId);
-        return conversationMapper.toListConversationResponses(list);
+
+        List<ConversationSidebarResponse> listResponses = new ArrayList<>();
+
+        for (var conversation : list) {
+            listResponses.add(ConversationSidebarResponse.builder()
+                    .id(conversation.getId())
+                    .name(conversation.getName())
+                    .group(conversation.isGroup())
+                    .latestMessage(messageMapper.toMessageResponse(conversation.getLatestMessage()))
+                    .members(conversationMemberMapper.toSetConversationMemberResponses(conversation.getMembers()))
+                    .createdAt(conversation.getCreatedAt())
+                    .build());
+        }
+        return listResponses;
+    }
+
+    public ConversationResponse getById(String conversationId) {
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+
+        return conversationMapper.toConversationResponse(conversation);
     }
 
     @Transactional // Rất quan trọng để đảm bảo tính toàn vẹn
@@ -123,15 +148,24 @@ public class ConversationService {
         return conversationMapper.toConversationResponse(conversation);
     }
 
+    @Transactional
     public void deleteConversation(String id) {
-        Conversation conversation = conversationRepository.findById(id)
-                .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
+        // 1. Dùng existsById thay vì findById để KHÔNG lưu đối tượng vào Cache
+        if (!conversationRepository.existsById(id)) {
+            throw new AppException(ResponseCode.NOT_FOUND);
+        }
 
+        // 2. Xóa liên kết khóa ngoại (đã có clearAutomatically nên không lo lỗi cache)
+        conversationRepository.clearLatestMessageById(id);
+
+        // Bỏ dòng conversationRepository.flush(); vì không còn cần thiết nữa
+
+        // 3. Xóa dữ liệu liên quan ở các bảng phụ
         conversationMembersRepository.deleteByConversationId(id);
-
         messageRepository.deleteByConversationId(id);
 
-        conversationRepository.delete(conversation);
+        // 4. Xóa cuộc hội thoại
+        conversationRepository.deleteById(id);
     }
 
     public CountResponse countTotalConversationsByUser(String userId) {
@@ -140,7 +174,7 @@ public class ConversationService {
         return new CountResponse(count);
     }
 
-    public AddConversationMemberResponse addConversationMember(AddConversationMemberRequest request,
+    public ConversationMemberResponse addConversationMember(AddConversationMemberRequest request,
             String conversationId) {
         Conversation conversation = conversationRepository.getReferenceById(conversationId);
         User user = userRepository.getReferenceById(request.getUserId());
@@ -154,6 +188,6 @@ public class ConversationService {
 
         conversationMembers = conversationMembersRepository.save(conversationMembers);
 
-        return conversationMemberMapper.toAddConversationMemberResponse(conversationMembers);
+        return conversationMemberMapper.toConversationMemberResponse(conversationMembers);
     }
 }

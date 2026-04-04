@@ -1,10 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import config from "../configs/config";
 
+import { useSocket } from "./SocketContext";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-
+  const { connect, disconnect, isConnected } = useSocket();
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
 
@@ -33,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     const response = await res.json();
 
     if (response.data) {
+      if (!isConnected) connect(token);
       setUser(response.data);
       return true;
     }
@@ -57,6 +60,7 @@ export const AuthProvider = ({ children }) => {
 
     if (response.data) {
       const newToken = response.data.token;
+      connect(newToken);
 
       setToken(newToken);
       localStorage.setItem("token", newToken);
@@ -90,6 +94,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    disconnect();
     setUser(null);
     setToken(null);
 

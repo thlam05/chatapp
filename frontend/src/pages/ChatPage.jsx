@@ -1,29 +1,30 @@
 import { Plus } from "lucide-react";
 import ChatItem from "../components/ChatItem";
-import AddMemberModal from "../components/modals/AddMemberModal";
-import ConfirmModal from "../components/modals/ConfirmModal";
 import AddChatModal from "../components/modals/AddChatModal";
 import { useAuth } from "../contexts/AuthContext";
+import { useSocket } from "../contexts/SocketContext";
 import { useEffect, useState } from "react";
-import * as ChatService from "../services/ChatService";
+import * as ChatApi from "../api/ChatApi";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 
 export default function ChatPage() {
+  const { client } = useSocket();
   const { user, isAuthenticated, token } = useAuth();
   const navigate = useNavigate();
   const { id: routeChatId } = useParams();
 
   const [listChats, setListChats] = useState([]);
+  const [listMessages, setListMessages] = useState([]);
   const [chatActive, setChatActive] = useState(null);
   const [isOpenCreateChatModal, setIsOpenCreateChatModal] = useState(false);
 
+  // Get list chat in side bar
   useEffect(() => {
     if (!isAuthenticated || !user?.id) return;
 
     const fetchChats = async () => {
       try {
-        const list = await ChatService.getListChatByUser({ userId: user.id, token });
-
+        const list = await ChatApi.getListChatByUser({ userId: user.id, token });
 
         list.map(chat => {
           if (chat.group == false) {
@@ -42,49 +43,72 @@ export default function ChatPage() {
     fetchChats();
   }, [user, isAuthenticated, token]);
 
+  // Get chat active from friend
   useEffect(() => {
-    if (!routeChatId || !listChats.length) return;
-
-    const selected = listChats.find((chat) => String(chat.id) === String(routeChatId));
-    if (selected) {
-      setChatActive(selected);
+    if (!routeChatId || !listChats.length) {
+      setChatActive(null);
       return;
     }
 
-    const loadConversation = async () => {
-      try {
-        const conversation = await ChatService.getConversationById({ conversationId: routeChatId, token });
-        if (conversation) {
-          setChatActive(conversation);
-        }
-      } catch (err) {
-        console.error(err);
+    loadConversation(String(routeChatId));
+  }, [routeChatId, listChats, token]);
+
+
+  useEffect(() => {
+    if (client == null || chatActive == null) return;
+
+    const subscription = client.subscribe(`/topic/chat/${chatActive.id}`, (message) => {
+      const m = JSON.parse(message.body);
+
+      // setListMessages((prev) => [...prev, m]);
+    })
+
+    console.log(`subscribe /chat/${chatActive.id}`)
+
+    const loadListMessages = async (chatId) => {
+      const messages = await ChatApi.getListMessageByChat({ chatId, token });
+
+      setListMessages(messages || []);
+    }
+
+    loadListMessages(chatActive.id);
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+        console.log("Cleanup thành công");
       }
     };
+  }, [chatActive]);
 
-    loadConversation();
-  }, [routeChatId, listChats, token]);
+  const loadConversation = async (chatId) => {
+    const chat = await ChatApi.getConversationById({ conversationId: chatId, token });
+    if (chat.group == false) {
+      const friend = chat.members.find(member => member.user.id != user.id);
+      chat.name = friend.user.username;
+    }
+    setChatActive(chat);
+  }
 
   const handleSendMessage = async (content) => {
     if (!chatActive) return;
 
-    const message = await ChatService.sendMessage({ content, conversationId: chatActive.id, userId: user.id, token });
+    const message = await ChatApi.sendMessage({ content, conversationId: chatActive.id, userId: user.id, token });
 
-    setChatActive((prev) => ({ ...prev, messages: [...(prev?.messages || []), message] }));
-    setListChats((prev) =>
-      prev.map((item) =>
-        item.id === chatActive.id
-          ? { ...item, latestMessage: message, messages: [...(item.messages || []), message] }
-          : item
-      )
-    );
+    setListMessages((prev) => [...prev, message]);
+    // setListChats((prev) =>
+    //   prev.map((item) =>
+    //     item.id === chatActive.id
+    //       ? { ...item, latestMessage: message }
+    //       : item
+    //   )
+    // );
   };
 
   async function handleAddMember(member) {
     if (!chatActive) return;
 
     try {
-      await ChatService.addMemberToChat({ conversationId: chatActive.id, userId: member.id, token });
+      await ChatApi.addMemberToChat({ conversationId: chatActive.id, userId: member.id, token });
       setIsModalAddMemberOpen(false);
     } catch (error) {
       console.error("Error adding member:", error);
@@ -94,7 +118,7 @@ export default function ChatPage() {
   async function handleDeleteChat() {
     if (!chatActive) return;
 
-    await ChatService.deleteChat({ conversationId: chatActive.id, token });
+    await ChatApi.deleteChat({ conversationId: chatActive.id, token });
 
     setListChats((prev) => prev.filter((chat) => chat.id !== chatActive.id));
     setChatActive(null);
@@ -102,7 +126,7 @@ export default function ChatPage() {
   }
 
   async function handleCreateChat({ name }) {
-    const chat = await ChatService.createChat({ name, token });
+    const chat = await ChatApi.createChat({ name, token });
 
     if (!chat) return;
 
@@ -117,7 +141,8 @@ export default function ChatPage() {
   }
 
   const handleChatSelect = (chat) => {
-    setChatActive(chat);
+    loadConversation(chat.id);
+
     if (chat.group) {
       navigate(`/chat/group/${chat.id}`);
     } else {
@@ -157,6 +182,7 @@ export default function ChatPage() {
         <Outlet
           context={{
             chat: chatActive,
+            messages: listMessages,
             user,
             onSendMessage: handleSendMessage,
             onAddMember: handleAddMember,

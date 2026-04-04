@@ -5,11 +5,14 @@ import router from './routes/Router';
 import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { SocketProvider } from './contexts/SocketContext';
 
 createRoot(document.getElementById('root')).render(
-  <AuthProvider>
-    <NotificationProvider>
-      <RouterProvider router={router} />,
-    </NotificationProvider>
-  </AuthProvider>
+  <SocketProvider>
+    <AuthProvider>
+      <NotificationProvider>
+        <RouterProvider router={router} />
+      </NotificationProvider>
+    </AuthProvider>
+  </SocketProvider>
 );

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import NotificationItem from "../components/NotificationItem";
-import * as NotificationService from "../services/NotificationService";
+import * as NotificationApi from "../api/NotificationApi";
 
 export default function NotificationPage() {
   const { user, token, isAuthenticated } = useAuth();
@@ -11,7 +11,7 @@ export default function NotificationPage() {
   useEffect(() => {
     const fetchNotification = async () => {
       try {
-        const listNoti = await NotificationService.getByUser({ userId: user.id, token });
+        const listNoti = await NotificationApi.getByUser({ userId: user.id, token });
         console.log(listNoti);
         setNotifications(listNoti);
       } catch (error) {
@@ -24,7 +24,7 @@ export default function NotificationPage() {
 
   const handleMarkAsRead = async (id) => {
     const body = { read: true };
-    await NotificationService.updateNotification({ body, notificationId: id, token });
+    await NotificationApi.updateNotification({ body, notificationId: id, token });
     setNotifications(prev =>
       prev.map(notif => notif.id === id ? { ...notif, read: true } : notif)
     );

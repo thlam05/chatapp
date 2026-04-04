@@ -20,7 +20,7 @@ public interface ConversationMembersRepository extends JpaRepository<Conversatio
                 """)
     Long countTotalConversationsByUser(String userId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
     @Query("DELETE FROM conversation_members cm WHERE cm.conversation.id = :conversationId")
     void deleteByConversationId(@Param("conversationId") String conversationId);

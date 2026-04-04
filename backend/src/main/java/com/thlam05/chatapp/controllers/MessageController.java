@@ -11,6 +11,10 @@ import com.thlam05.chatapp.services.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -19,10 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class MessageController {
     MessageService messageService;
 
-    @GetMapping("/test")
-    public String getMethodName() {
-        return "TEST";
-    }
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/users/{userId}/messages/count")
     public ApiResponse<CountResponse> countTotalMessagesOfUser(@PathVariable String userId) {
@@ -31,10 +32,19 @@ public class MessageController {
         return new ApiResponse<>(countResponse);
     }
 
+    @GetMapping("/conversations/{conversationId}/messages")
+    public ApiResponse<List<MessageResponse>> getMessagesByConversation(@PathVariable String conversationId) {
+        List<MessageResponse> responses = messageService.getAllMessagesByConversation(conversationId);
+        return new ApiResponse<>(responses);
+    }
+
     @PostMapping("/conversations/{conversationId}/messages")
     public ApiResponse<MessageResponse> createMessage(@RequestBody CreateMessageRequest createMessageRequest,
             @PathVariable String conversationId) {
         MessageResponse messageResponse = messageService.createMessage(createMessageRequest, conversationId);
+
+        // String destination = "/topic/chat/" + conversationId;
+        // messagingTemplate.convertAndSend(destination, messageResponse);
 
         return new ApiResponse<>(messageResponse);
     }

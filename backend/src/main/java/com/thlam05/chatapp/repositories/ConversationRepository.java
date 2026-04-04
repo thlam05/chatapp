@@ -4,10 +4,14 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.thlam05.chatapp.models.Conversation;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface ConversationRepository extends JpaRepository<Conversation, String> {
@@ -16,7 +20,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
                 FROM conversations c
                 JOIN  c.members cm
                 LEFT JOIN FETCH c.members _cm
-                LEFT JOIN FETCH c.messages m
+                LEFT JOIN FETCH c.latestMessage m
                 LEFT JOIN FETCH m.user
                 WHERE cm.user.id=:userId
             """)
@@ -35,4 +39,9 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
             WHERE c.group = false AND cm1.user.id = :userId AND cm2.user.id = :friendId
                 """)
     Conversation accessConversation(String userId, String friendId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Query("UPDATE conversations c SET c.latestMessage = null WHERE c.id = :conversationId")
+    void clearLatestMessageById(@Param("conversationId") String conversationId);
 }

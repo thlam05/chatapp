@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.thlam05.chatapp.dto.request.CreateMessageRequest;
 import com.thlam05.chatapp.dto.response.CountResponse;
@@ -28,6 +29,7 @@ public class MessageService {
     MessageMapper messageMapper;
     UserRepository userRepository;
 
+    @Transactional
     public MessageResponse createMessage(CreateMessageRequest createMessageRequest, String conversationId) {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new AppException(ResponseCode.NOT_FOUND));
@@ -45,6 +47,9 @@ public class MessageService {
                 .build();
 
         message = messageRepository.save(message);
+
+        conversation.setLatestMessage(message);
+        conversationRepository.save(conversation);
 
         return messageMapper.toMessageResponse(message);
     }
