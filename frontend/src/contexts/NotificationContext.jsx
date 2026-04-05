@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { CheckCircle, AlertCircle, Info, X } from "lucide-react";
+import { CheckCircle, AlertCircle, Info, X, AlertTriangle, XCircle } from "lucide-react";
 import { useAuth } from "./AuthContext"; // Import useAuth để lấy user và token
 import * as NotificationApi from "../api/NotificationApi"; // Import file service của bạn
 
@@ -46,6 +46,19 @@ export function NotificationProvider({ children }) {
     success: { bg: "bg-green-50", border: "border-green-200", text: "text-green-800", icon: <CheckCircle className="text-green-500" size={20} /> },
     error: { bg: "bg-red-50", border: "border-red-200", text: "text-red-800", icon: <AlertCircle className="text-red-500" size={20} /> },
     info: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-800", icon: <Info className="text-blue-500" size={20} /> },
+    warning: {
+      bg: "bg-yellow-50",
+      border: "border-yellow-200",
+      text: "text-yellow-800",
+      icon: <AlertTriangle className="text-yellow-500" size={20} />
+    },
+
+    danger: {
+      bg: "bg-red-100",
+      border: "border-red-300",
+      text: "text-red-900",
+      icon: <XCircle className="text-red-600" size={20} />
+    },
   };
 
   return (

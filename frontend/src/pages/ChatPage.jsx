@@ -136,7 +136,7 @@ export default function ChatPage() {
   const handleSendMessage = async (content) => {
     if (!chatActive) return;
 
-    const message = await ChatApi.sendMessage({ content, conversationId: chatActive.id, userId: user.id, token });
+    await ChatApi.sendMessage({ content, conversationId: chatActive.id, userId: user.id, token });
   };
 
   async function handleAddMember(member) {
