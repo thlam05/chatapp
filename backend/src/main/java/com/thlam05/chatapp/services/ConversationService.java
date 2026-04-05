@@ -82,7 +82,7 @@ public class ConversationService {
     }
 
     @Transactional // Rất quan trọng để đảm bảo tính toàn vẹn
-    public ConversationResponse accessConversation(AccessConversationRequest request) {
+    public ConversationSidebarResponse accessConversation(AccessConversationRequest request) {
         var context = SecurityContextHolder.getContext();
         String userId = context.getAuthentication().getName();
 
@@ -90,7 +90,14 @@ public class ConversationService {
                 .accessConversation(userId, request.getPartnerId());
 
         if (existingConv != null) {
-            return conversationMapper.toConversationResponse(existingConv);
+            return ConversationSidebarResponse.builder()
+                    .id(existingConv.getId())
+                    .name(existingConv.getName())
+                    .group(existingConv.isGroup())
+                    .latestMessage(messageMapper.toMessageResponse(existingConv.getLatestMessage()))
+                    .members(conversationMemberMapper.toSetConversationMemberResponses(existingConv.getMembers()))
+                    .createdAt(existingConv.getCreatedAt())
+                    .build();
         }
 
         User user = userRepository.getReferenceById(userId);
@@ -121,10 +128,17 @@ public class ConversationService {
 
         savedConversation.setMembers(Set.of(member1, member2));
 
-        return conversationMapper.toConversationResponse(savedConversation);
+        return ConversationSidebarResponse.builder()
+                .id(savedConversation.getId())
+                .name(savedConversation.getName())
+                .group(savedConversation.isGroup())
+                .latestMessage(null)
+                .members(conversationMemberMapper.toSetConversationMemberResponses(savedConversation.getMembers()))
+                .createdAt(savedConversation.getCreatedAt())
+                .build();
     }
 
-    public ConversationResponse createConversation(CreateConversationRequest createConversationRequest) {
+    public ConversationSidebarResponse createConversation(CreateConversationRequest createConversationRequest) {
         Conversation conversation = Conversation.builder()
                 .name(createConversationRequest.getName())
                 .group(createConversationRequest.isGroup())
@@ -145,7 +159,16 @@ public class ConversationService {
 
         conversationMembersRepository.save(conversationMembers);
 
-        return conversationMapper.toConversationResponse(conversation);
+        conversation.setMembers(Set.of(conversationMembers));
+
+        return ConversationSidebarResponse.builder()
+                .id(conversation.getId())
+                .name(conversation.getName())
+                .group(conversation.isGroup())
+                .latestMessage(null)
+                .members(conversationMemberMapper.toSetConversationMemberResponses(conversation.getMembers()))
+                .createdAt(conversation.getCreatedAt())
+                .build();
     }
 
     @Transactional

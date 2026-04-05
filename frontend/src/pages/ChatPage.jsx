@@ -46,16 +46,27 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (!client) return;
-    const subscription = client.subscribe(`/topic/chatSidebar/${user.id}`, (message) => {
+    const subscription = client.subscribe(`/topic/chatSidebar/${user.id}`, async (message) => {
       const m = JSON.parse(message.body);
 
-      setListChats((prev) =>
-        prev.map((item) =>
-          item.id === m.chatId
-            ? { ...item, latestMessage: m.message }
-            : item
-        )
-      );
+      if (m.type == "CHAT") {
+        setListChats((prev) =>
+          prev.map((item) =>
+            item.id === m.chatId
+              ? { ...item, latestMessage: m.message }
+              : item
+          )
+        );
+      } else if (m.type == "DELETE") {
+        setListChats((prev) => prev.filter((chat) => chat.id !== m.chatId));
+      } else if (m.type == "ADD") {
+        if (m.chat) {
+          setListChats((prev) => [...prev, m.chat]);
+        } else {
+          const chat = await ChatApi.getConversationById({ conversationId: m.chatId, token });
+          setListChats((prev) => [...prev, chat]);
+        }
+      }
     })
 
     console.log(`subcribe /topic/chatSidebar/${user.id}`)
@@ -87,6 +98,11 @@ export default function ChatPage() {
 
       if (m.type == "CHAT") {
         setListMessages((prev) => [...prev, m.message]);
+      } else if (m.type == "DELETE") {
+        setChatActive(null);
+        navigate("/chat");
+      } else if (m.type == "ADD") {
+        console.log(m);
       }
 
     })
@@ -128,7 +144,6 @@ export default function ChatPage() {
 
     try {
       await ChatApi.addMemberToChat({ conversationId: chatActive.id, userId: member.id, token });
-      setIsModalAddMemberOpen(false);
     } catch (error) {
       console.error("Error adding member:", error);
     }
@@ -138,10 +153,6 @@ export default function ChatPage() {
     if (!chatActive) return;
 
     await ChatApi.deleteChat({ conversationId: chatActive.id, token });
-
-    setListChats((prev) => prev.filter((chat) => chat.id !== chatActive.id));
-    setChatActive(null);
-    navigate("/chat");
   }
 
   async function handleCreateChat({ name }) {
@@ -150,7 +161,6 @@ export default function ChatPage() {
     if (!chat) return;
 
     setChatActive(chat);
-    setListChats((prev) => [...prev, chat]);
 
     if (chat.group) {
       navigate(`/chat/group/${chat.id}`);

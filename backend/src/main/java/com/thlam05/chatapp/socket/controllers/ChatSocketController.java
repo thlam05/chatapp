@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import com.thlam05.chatapp.dto.response.MessageResponse;
 import com.thlam05.chatapp.enums.MessageType;
 import com.thlam05.chatapp.socket.payloads.ChatMessage;
-import com.thlam05.chatapp.socket.payloads.ChatSidebar;
 
 import lombok.AllArgsConstructor;
 
@@ -22,12 +21,12 @@ public class ChatSocketController {
     @SendTo("/topic/chat/{chatId}")
     public ChatMessage handleChatMessage(@Payload MessageResponse message,
             @DestinationVariable String chatId) {
-        return new ChatMessage(MessageType.CHAT, message);
+        return new ChatMessage(MessageType.CHAT, message, chatId, null);
     }
 
     @MessageMapping("/chatSidebar/{userId}")
     @SendTo("/topic/chatSidebar/{userId}")
-    public ChatSidebar handleChatSidebar(@Payload ChatSidebar message,
+    public ChatMessage handleChatSidebar(@Payload ChatMessage message,
             @DestinationVariable String userId) {
         return message;
     }

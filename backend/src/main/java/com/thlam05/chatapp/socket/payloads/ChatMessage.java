@@ -1,5 +1,6 @@
 package com.thlam05.chatapp.socket.payloads;
 
+import com.thlam05.chatapp.dto.response.ConversationSidebarResponse;
 import com.thlam05.chatapp.dto.response.MessageResponse;
 import com.thlam05.chatapp.enums.MessageType;
 
@@ -20,4 +21,6 @@ import lombok.experimental.FieldDefaults;
 public class ChatMessage {
     MessageType type;
     MessageResponse message;
+    String chatId;
+    ConversationSidebarResponse chat;
 }

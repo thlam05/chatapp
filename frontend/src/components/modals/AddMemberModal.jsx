@@ -22,7 +22,13 @@ export default function AddMemberModal({
 		setLoading(true);
 		try {
 			const userList = await UserApi.getFriendsOfUser({ userId: user.id, token });
-			setUsers(userList);
+			setUsers(userList.map(f => {
+				return {
+					status: f.status,
+					createdAt: f.createdAt,
+					user: f.user.id == user.id ? f.friend : f.user
+				}
+			}));
 		} catch (error) {
 			console.error("Error fetching users:", error);
 		} finally {

@@ -12,6 +12,7 @@ import com.thlam05.chatapp.dto.response.ConversationSidebarResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.enums.ResponseCode;
 import com.thlam05.chatapp.services.ConversationService;
+import com.thlam05.chatapp.socket.services.ChatSocketService;
 
 import lombok.AllArgsConstructor;
 
@@ -27,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @AllArgsConstructor
 public class ConversationController {
     ConversationService conversationService;
+
+    ChatSocketService chatSocketService;
 
     @GetMapping("/conversations")
     public ApiResponse<List<ConversationResponse>> getAll() {
@@ -56,29 +59,36 @@ public class ConversationController {
     }
 
     @PostMapping("/conversations")
-    public ApiResponse<ConversationResponse> createConversation(
+    public ApiResponse<ConversationSidebarResponse> createConversation(
             @RequestBody CreateConversationRequest createConversationRequest) {
 
-        ConversationResponse conversationResponse = conversationService.createConversation(createConversationRequest);
+        ConversationSidebarResponse conversationResponse = conversationService
+                .createConversation(createConversationRequest);
+
+        chatSocketService.addChat(conversationResponse);
 
         return new ApiResponse<>(conversationResponse);
     }
 
     @PostMapping("/conversations/access")
-    public ApiResponse<ConversationResponse> getOrCreateConversation(@RequestBody AccessConversationRequest request) {
-        ConversationResponse response = conversationService.accessConversation(request);
+    public ApiResponse<ConversationSidebarResponse> getOrCreateConversation(
+            @RequestBody AccessConversationRequest request) {
+        ConversationSidebarResponse response = conversationService.accessConversation(request);
         return new ApiResponse<>(response);
     }
 
     @PostMapping("/conversations/{conversationId}/members")
-    public ApiResponse<ConversationMemberResponse> postMethodName(@RequestBody AddConversationMemberRequest request,
+    public ApiResponse<ConversationMemberResponse> addMember(@RequestBody AddConversationMemberRequest request,
             @PathVariable String conversationId) {
         ConversationMemberResponse response = conversationService.addConversationMember(request, conversationId);
+
+        chatSocketService.addMember(response, conversationId);
         return new ApiResponse<>(response);
     }
 
     @DeleteMapping("/conversations/{conversationId}")
     public ApiResponse<?> deleteConversation(@PathVariable String conversationId) {
+        chatSocketService.deleteChat(conversationId);
         conversationService.deleteConversation(conversationId);
 
         return new ApiResponse<>(ResponseCode.SUCCESS);
