@@ -14,6 +14,12 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, String> {
+    @Query("""
+            SELECT m
+            FROM messages m
+            WHERE m.conversation.id = :id
+            ORDER BY m.createdAt
+            """)
     List<Message> findByConversationId(String id);
 
     @Query("""

@@ -60,7 +60,14 @@ export default function ChatPage() {
     const subscription = client.subscribe(`/topic/chat/${chatActive.id}`, (message) => {
       const m = JSON.parse(message.body);
 
-      // setListMessages((prev) => [...prev, m]);
+      setListMessages((prev) => [...prev, m]);
+      setListChats((prev) =>
+        prev.map((item) =>
+          item.id === chatActive.id
+            ? { ...item, latestMessage: m }
+            : item
+        )
+      );
     })
 
     console.log(`subscribe /chat/${chatActive.id}`)
@@ -93,15 +100,6 @@ export default function ChatPage() {
     if (!chatActive) return;
 
     const message = await ChatApi.sendMessage({ content, conversationId: chatActive.id, userId: user.id, token });
-
-    setListMessages((prev) => [...prev, message]);
-    // setListChats((prev) =>
-    //   prev.map((item) =>
-    //     item.id === chatActive.id
-    //       ? { ...item, latestMessage: message }
-    //       : item
-    //   )
-    // );
   };
 
   async function handleAddMember(member) {

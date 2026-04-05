@@ -43,8 +43,8 @@ public class MessageController {
             @PathVariable String conversationId) {
         MessageResponse messageResponse = messageService.createMessage(createMessageRequest, conversationId);
 
-        // String destination = "/topic/chat/" + conversationId;
-        // messagingTemplate.convertAndSend(destination, messageResponse);
+        String destination = "/topic/chat/" + conversationId;
+        messagingTemplate.convertAndSend(destination, messageResponse);
 
         return new ApiResponse<>(messageResponse);
     }
