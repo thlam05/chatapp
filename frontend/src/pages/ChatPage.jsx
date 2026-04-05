@@ -35,6 +35,7 @@ export default function ChatPage() {
         })
 
         setListChats(list || []);
+
       } catch (err) {
         console.error(err);
       }
@@ -42,6 +43,30 @@ export default function ChatPage() {
 
     fetchChats();
   }, [user, isAuthenticated, token]);
+
+  useEffect(() => {
+    if (!client) return;
+    const subscription = client.subscribe(`/topic/chatSidebar/${user.id}`, (message) => {
+      const m = JSON.parse(message.body);
+
+      setListChats((prev) =>
+        prev.map((item) =>
+          item.id === m.chatId
+            ? { ...item, latestMessage: m.message }
+            : item
+        )
+      );
+    })
+
+    console.log(`subcribe /topic/chatSidebar/${user.id}`)
+
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+        console.log("Cleanup thành công");
+      }
+    };
+  }, [client]);
 
   // Get chat active from friend
   useEffect(() => {
@@ -60,14 +85,10 @@ export default function ChatPage() {
     const subscription = client.subscribe(`/topic/chat/${chatActive.id}`, (message) => {
       const m = JSON.parse(message.body);
 
-      setListMessages((prev) => [...prev, m]);
-      setListChats((prev) =>
-        prev.map((item) =>
-          item.id === chatActive.id
-            ? { ...item, latestMessage: m }
-            : item
-        )
-      );
+      if (m.type == "CHAT") {
+        setListMessages((prev) => [...prev, m.message]);
+      }
+
     })
 
     console.log(`subscribe /chat/${chatActive.id}`)

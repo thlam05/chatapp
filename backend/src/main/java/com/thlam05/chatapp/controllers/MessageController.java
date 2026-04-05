@@ -7,6 +7,7 @@ import com.thlam05.chatapp.dto.response.ApiResponse;
 import com.thlam05.chatapp.dto.response.CountResponse;
 import com.thlam05.chatapp.dto.response.MessageResponse;
 import com.thlam05.chatapp.services.MessageService;
+import com.thlam05.chatapp.socket.services.ChatSocketService;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class MessageController {
     MessageService messageService;
 
-    private SimpMessagingTemplate messagingTemplate;
+    private ChatSocketService chatSocketService;
 
     @GetMapping("/users/{userId}/messages/count")
     public ApiResponse<CountResponse> countTotalMessagesOfUser(@PathVariable String userId) {
@@ -43,9 +43,7 @@ public class MessageController {
             @PathVariable String conversationId) {
         MessageResponse messageResponse = messageService.createMessage(createMessageRequest, conversationId);
 
-        String destination = "/topic/chat/" + conversationId;
-        messagingTemplate.convertAndSend(destination, messageResponse);
-
+        chatSocketService.sendMessage(messageResponse, conversationId);
         return new ApiResponse<>(messageResponse);
     }
 
