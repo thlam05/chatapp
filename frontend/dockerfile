@@ -1,12 +1,21 @@
-FROM node:18-alpine
-
+FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-COPY ./src ./src
+COPY . .
 
-EXPOSE 5173
+# Same-origin by default: nginx proxies /api and /ws to the backend.
+ARG VITE_BASE_API=/api
+ARG VITE_WS_API=/ws
+ENV VITE_BASE_API=$VITE_BASE_API \
+    VITE_WS_API=$VITE_WS_API
+RUN npm run build
 
-CMD ["npm", "run", "dev"]
+FROM nginx:1.27-alpine
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80

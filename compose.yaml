@@ -1,0 +1,51 @@
+name: chatapp
+
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-app_chat}
+      MYSQL_USER: ${DB_USERNAME:-chatapp}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-chatapp-dev}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-chatapp-dev-root}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    environment:
+      DB_URL: jdbc:mysql://db:3306/${DB_NAME:-app_chat}?allowPublicKeyRetrieval=true&useSSL=false
+      DB_USERNAME: ${DB_USERNAME:-chatapp}
+      DB_PASSWORD: ${DB_PASSWORD:-chatapp-dev}
+      SECRET_KEY: ${SECRET_KEY:-dev-only-signing-key-for-local-compose-runs-not-for-production-use-0123456789abcdef}
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+      args:
+        VITE_BASE_API: /api
+        VITE_WS_API: /ws
+    ports:
+      - "${PORT:-3000}:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db-data:

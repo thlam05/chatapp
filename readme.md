@@ -73,6 +73,15 @@ Từ thư mục `frontend`:
 
 Frontend chạy mặc định ở cổng `5173`.
 
+### Chạy bằng Docker Compose
+
+Từ thư mục gốc, `compose.yaml` dựng 3 service: `db` (MySQL 8, volume `db-data`), `backend` (Spring Boot, chỉ truy cập nội bộ trên cổng `8080`) và `web` (nginx phục vụ bản build của frontend, publish ra `${PORT:-3000}`).
+
+- Chạy: `bin/run` (hoặc `docker compose up --build`), rồi mở `http://localhost:3000`.
+- nginx (`frontend/nginx.conf`) phục vụ SPA tại `/`, chuyển tiếp `/api/*` tới `backend:8080` (bỏ tiền tố `/api`) và `/ws` tới `backend:8080` kèm header nâng cấp WebSocket. Frontend được build với `VITE_BASE_API=/api` và `VITE_WS_API=/ws` (cùng origin).
+- Biến tuỳ chọn (có giá trị mặc định chỉ dùng cho dev): `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`, `SECRET_KEY`. Đặt `SECRET_KEY` riêng cho môi trường thật.
+- Dữ liệu MySQL nằm trong volume `db-data` nên vẫn còn sau khi dừng và chạy lại.
+
 ## Cấu hình file `.env`
 
 Project hiện đang dùng trực tiếp các file:
