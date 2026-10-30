@@ -1,7 +1,16 @@
 ﻿import React, { createContext, useRef, useState, useContext } from 'react';
 import { Client } from '@stomp/stompjs';
+import config from '../configs/config';
 
 export const SocketContext = createContext(null);
+
+const resolveWsUrl = (wsApi) => {
+  if (/^wss?:\/\//i.test(wsApi)) return wsApi;
+
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const path = wsApi.startsWith('/') ? wsApi : '/' + wsApi;
+  return `${protocol}//${window.location.host}${path}`;
+};
 
 export const SocketProvider = ({ children }) => {
   const clientRef = useRef(null);
@@ -11,7 +20,7 @@ export const SocketProvider = ({ children }) => {
     if (clientRef.current?.active) return;
 
     const client = new Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: resolveWsUrl(config.WS_API),
       connectHeaders: {
         Authorization: "Bearer " + token
       },
